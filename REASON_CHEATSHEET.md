@@ -1,0 +1,54 @@
+- Built-in types:
+  - `bool`
+  - `int`
+  - `list(T)`: list of T
+  - `string`
+  - `option(T)`: `Some(t)` or `None`
+- Converting to/from JS types:
+  - JS boolean to Reason bool: `Js.to_bool`
+  - Reason bool to JS boolean: `Js.Boolean.to_js_boolean`
+    - Equivalent to `expr ? Js.true_ : Js.false_`
+- Using JS types:
+  - Objects:
+    - Declaring a type: `Js.Dict.t(int)`
+    - Creating a dict: `Js.Dict.empty()`
+    - Setting a value: `Js.Dict.set(dict, 10)`
+- CSS:
+  - Alias: `let style = ReactDOMRe.Style.make;`
+  - Use: `<div style=(style(~fontFamily="courier", ()))>`
+- Lists:
+  - Empty list: `[]`
+  - Length: `List.length(l)`
+  - Append: (given two lists, `a` and `b`) `List.append(a, b)` or `a @ b` (note: O(n))
+  - Converting to arrays: `Array.of_list`
+- Logging: `Js.log("clicked!")`
+- Maps:
+  - Creating a map with string keys: `module StringMap = Map.Make(String);`
+  - The type of map with string keys, bool values: `StringMap.t(bool)`
+  - Adding some values: `StringMap.(empty |> add("foo", true) |> add("bar", false));`
+- React:
+  - Components:
+    - `ReasonReact.statelessComponent`
+    - `ReasonReact.reducerComponent`
+  - Convenience aliases:
+    - Text nodes: `let text = ReasonReact.stringToElement;`
+    - Arrays: `let elementsArray = ReasonReact.arrayToElement;`
+    - Lists: `let elementsList = (l) => elementsArray(Array.of_list(l));`
+  - Rendering strings: `ReasonReact.stringToElement("foo")`
+  - Rendering null: `ReasonReact.nullElement`
+  - Performing an update in a reducer: `ReasonReact.Update(newState)`
+  - Skipping an update in a reducer: `ReasonReact.NoUpdate`
+- Records:
+  - Type declaration: `type thing = {a: int, b: string}`
+  - Instantiation: `let foo = {a: 1, b: "thing"}`
+  - Immutable update: `{...foo, b: "other"}`
+  - Mutable type declaration: `type abc = {a: int, mutable b: string}`
+  - Mutable update : `someRecord.b = "new value"`
+  - Value punning (like ES6 object short notation): `let b = "foo"; let someRec = {a: 1, b}`
+  - Type punning: (given `type abc = ...`) `type something = {a: int, abc}`
+- String operations:
+  - Concatenation: `++`
+  - Stringifying:
+    - `string_of_int`
+- Modules:
+  - Generating an interface: `bsc -bs-re-out lib/bs/src/index-ReactTemplate.cmi`

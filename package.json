@@ -5,7 +5,7 @@
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "webpack": "webpack -w"
   },
   "keywords": [
@@ -14,12 +14,14 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "npm": "5.7.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
-    "reason-react": ">=0.3.0"
+    "reason-react": "0.3.2"
   },
   "devDependencies": {
-    "bs-platform": "^2.1.0",
+    "@glennsl/bs-jest": "0.4.2",
+    "bs-platform": "2.2.2",
     "webpack": "^3.8.1"
   }
 }
