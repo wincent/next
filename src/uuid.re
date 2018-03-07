@@ -15,12 +15,32 @@ let (>>>) = Int32.shift_right_logical;
 /* Convenience function. */
 let int32 = Int32.of_int;
 
-let digits = [|"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"|];
+let digits = [|
+  "0",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+|];
 
 let to_hex = (a: int32) : string => {
   let nibbles =
-    List.map((i) => digits[Int32.to_int(a >>> i * 4 &&& int32(0xf))], range(0, 7) |> List.rev);
-  join(nibbles, "")
+    List.map(
+      i => digits[Int32.to_int(a >>> i * 4 &&& int32(0xf))],
+      range(0, 7) |> List.rev,
+    );
+  join(nibbles, "");
 };
 
 Random.self_init();
@@ -63,9 +83,11 @@ let getUUID = () => {
   let uuid = join(List.map(to_hex, Array.to_list(timestamp)), "");
   sub(uuid, 0, 8)
   ++ "-"
-  ++ (
-    sub(uuid, 8, 4)
-    ++ "-"
-    ++ (sub(uuid, 12, 4) ++ "-" ++ (sub(uuid, 16, 4) ++ "-" ++ sub(uuid, 20, 12)))
-  )
+  ++ sub(uuid, 8, 4)
+  ++ "-"
+  ++ sub(uuid, 12, 4)
+  ++ "-"
+  ++ sub(uuid, 16, 4)
+  ++ "-"
+  ++ sub(uuid, 20, 12);
 };

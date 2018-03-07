@@ -5,7 +5,7 @@ let rec join = (strings, separator) =>
   switch (strings, separator) {
   | ([], _) => ""
   | ([x], _) => x
-  | ([x, ...xs], str) => x ++ (str ++ join(xs, str))
+  | ([x, ...xs], str) => x ++ str ++ join(xs, str)
   };
 
 
