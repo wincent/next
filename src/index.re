@@ -1,5 +1,7 @@
 open Uuid;
 
+open Js.Boolean; /* For `to_js_boolean`. */
+
 let elementsArray = ReasonReact.arrayToElement;
 
 let elementsList = l => elementsArray(Array.of_list(l));
@@ -76,7 +78,7 @@ module TaskInput = {
           value=state.newTaskTitle
         />
         <button
-          disabled=(nextTaskTitle == "" ? Js.true_ : Js.false_)
+          disabled=(to_js_boolean(nextTaskTitle == ""))
           onClick=(_event => create(state.newTaskTitle))>
           (text("Add Task"))
         </button>
@@ -161,7 +163,7 @@ module TaskList = {
           )>
           <input
             _type="checkbox"
-            checked=(task.completed ? Js.true_ : Js.false_)
+            checked=(to_js_boolean(task.completed))
             onChange=(
               _event => onUpdate({...task, completed: ! task.completed})
             )
@@ -173,8 +175,7 @@ module TaskList = {
         </label>
         <button
           disabled=(
-            state.addingSubtask |> StringSet.mem(task.id) ?
-              Js.true_ : Js.false_
+            state.addingSubtask |> StringSet.mem(task.id) |> to_js_boolean
           )
           onClick=(_event => send(AddSubtask(task.id)))>
           (text("Add subtask"))
