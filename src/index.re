@@ -99,9 +99,8 @@ module TaskInput = {
  */
 /* TODO: add undo button */
 module TaskList = {
-  /* TODO: see if this should be a Set instead of a Map */
-  module StringMap = Map.Make(String);
-  type state = {addingSubtask: StringMap.t(bool)};
+  module StringSet = Set.Make(String);
+  type state = {addingSubtask: StringSet.t};
   type action =
     | AddSubtask(string)
     | CancelAddSubtask(string);
@@ -151,7 +150,7 @@ module TaskList = {
     and renderTask = (self, ~task, ~level, ~onDelete, ~onUpdate) => {
       let send = self.ReasonReact.send;
       let state = self.ReasonReact.state;
-      let addingSubtask = state.addingSubtask |> StringMap.mem(task.id);
+      let addingSubtask = state.addingSubtask |> StringSet.mem(task.id);
       <li key=task.id>
         <label
           style=(
@@ -174,7 +173,7 @@ module TaskList = {
         </label>
         <button
           disabled=(
-            state.addingSubtask |> StringMap.mem(task.id) ?
+            state.addingSubtask |> StringSet.mem(task.id) ?
               Js.true_ : Js.false_
           )
           onClick=(_event => send(AddSubtask(task.id)))>
@@ -230,16 +229,16 @@ module TaskList = {
     };
     {
       ...component,
-      initialState: () => {addingSubtask: StringMap.empty},
+      initialState: () => {addingSubtask: StringSet.empty},
       reducer: (action, state) =>
         switch (action) {
         | AddSubtask(id) =>
           ReasonReact.Update({
-            addingSubtask: state.addingSubtask |> StringMap.add(id, true),
+            addingSubtask: state.addingSubtask |> StringSet.add(id),
           })
         | CancelAddSubtask(id) =>
           ReasonReact.Update({
-            addingSubtask: state.addingSubtask |> StringMap.remove(id),
+            addingSubtask: state.addingSubtask |> StringSet.remove(id),
           })
         },
       render: self =>
