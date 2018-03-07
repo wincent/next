@@ -1,6 +1,6 @@
-open Uuid;
-
 open Js.Boolean; /* For `to_js_boolean`. */
+
+open Uuid;
 
 let elementsArray = ReasonReact.arrayToElement;
 
