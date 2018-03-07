@@ -2,7 +2,7 @@ open Uuid;
 
 let elementsArray = ReasonReact.arrayToElement;
 
-let elementsList = (l) => elementsArray(Array.of_list(l));
+let elementsList = l => elementsArray(Array.of_list(l));
 
 let nullElement = ReasonReact.nullElement;
 
@@ -19,7 +19,7 @@ type task = {
   id: uuid,
   title: string,
   completed: bool,
-  subtasks: list(task)
+  subtasks: list(task),
 };
 
 let escapeKey = 27;
@@ -36,39 +36,40 @@ module TaskInput = {
     ...component,
     initialState: () => {newTaskTitle: ""},
     reducer: (action, _state) =>
-      switch action {
-      | EditNewTaskTitle(newTaskTitle) => ReasonReact.Update({newTaskTitle: newTaskTitle})
+      switch (action) {
+      | EditNewTaskTitle(newTaskTitle) =>
+        ReasonReact.Update({newTaskTitle: newTaskTitle})
       | Reset => ReasonReact.Update({newTaskTitle: ""})
       },
     render: ({state, send}) => {
       let nextTaskTitle = String.trim(state.newTaskTitle);
-      let create = (title) => {
+      let create = title => {
         onCreate(title);
-        send(Reset)
+        send(Reset);
       };
       <span style=(style(~display="inline-block", ~padding="8px", ()))>
         <input
           _type="text"
           onChange=(
-            (event) =>
+            event =>
               send(
                 EditNewTaskTitle(
-                  ReactDOMRe.domElementToObj(ReactEventRe.Form.target(event))##value
-                )
+                  ReactDOMRe.domElementToObj(ReactEventRe.Form.target(event))##value,
+                ),
               )
           )
           onKeyDown=(
-            (event) => {
+            event => {
               let keyCode = ReactEventRe.Keyboard.keyCode(event);
               if (nextTaskTitle != "" && keyCode === returnKey) {
                 ReactEventRe.Keyboard.preventDefault(event);
-                create(nextTaskTitle)
+                create(nextTaskTitle);
               } else if (keyCode === escapeKey) {
-                switch onCancel {
+                switch (onCancel) {
                 | Some(cb) => cb()
                 | None => ()
-                }
-              }
+                };
+              };
             }
           )
           placeholder="new task"
@@ -76,17 +77,18 @@ module TaskInput = {
         />
         <button
           disabled=(nextTaskTitle == "" ? Js.true_ : Js.false_)
-          onClick=((_event) => create(state.newTaskTitle))>
+          onClick=(_event => create(state.newTaskTitle))>
           (text("Add Task"))
         </button>
         (
-          switch onCancel {
-          | Some(cb) => <button onClick=((_event) => cb())> (text("Cancel")) </button>
+          switch (onCancel) {
+          | Some(cb) =>
+            <button onClick=(_event => cb())> (text("Cancel")) </button>
           | None => nullElement
           }
         )
-      </span>
-    }
+      </span>;
+    },
   };
 };
 
@@ -114,54 +116,73 @@ module TaskList = {
               ~onCancelAddSubtask,
               ~onCreate,
               ~onDelete,
-              ~onUpdate
+              ~onUpdate,
             ) => {
       let count = List.length(tasks);
       <div style=(style(~paddingLeft=string_of_int(level * 16) ++ "px", ()))>
         (
           if (count == 0) {
-            nullElement
+            nullElement;
           } else {
             <ul style=(style(~listStyleType="none", ()))>
               (
                 elementsList(
-                  List.map((task) => renderTask(self, ~task, ~level, ~onDelete, ~onUpdate), tasks)
+                  List.map(
+                    task =>
+                      renderTask(self, ~task, ~level, ~onDelete, ~onUpdate),
+                    tasks,
+                  ),
                 )
               )
-            </ul>
+            </ul>;
           }
         )
         (
           if (level == 0) {
-            <TaskInput onCreate />
+            <TaskInput onCreate />;
           } else if (addingSubtask) {
-            <TaskInput onCancel=onCancelAddSubtask onCreate />
+            <TaskInput onCancel=onCancelAddSubtask onCreate />;
           } else {
-            nullElement
+            nullElement;
           }
         )
-      </div>
+      </div>;
     }
     and renderTask = (self, ~task, ~level, ~onDelete, ~onUpdate) => {
       let send = self.ReasonReact.send;
       let state = self.ReasonReact.state;
       let addingSubtask = state.addingSubtask |> StringMap.mem(task.id);
       <li key=task.id>
-        <label style=(style(~textDecoration=task.completed ? "line-through" : "none", ()))>
+        <label
+          style=(
+            style(
+              ~textDecoration=task.completed ? "line-through" : "none",
+              (),
+            )
+          )>
           <input
             _type="checkbox"
             checked=(task.completed ? Js.true_ : Js.false_)
-            onChange=((_event) => onUpdate({...task, completed: ! task.completed}))
+            onChange=(
+              _event => onUpdate({...task, completed: ! task.completed})
+            )
           />
-          <span style=(style(~color="#ccc", ()))> (text(task.id ++ ":")) </span>
+          <span style=(style(~color="#ccc", ()))>
+            (text(task.id ++ ":"))
+          </span>
           (text(" " ++ task.title ++ " "))
         </label>
         <button
-          disabled=(state.addingSubtask |> StringMap.mem(task.id) ? Js.true_ : Js.false_)
-          onClick=((_event) => send(AddSubtask(task.id)))>
+          disabled=(
+            state.addingSubtask |> StringMap.mem(task.id) ?
+              Js.true_ : Js.false_
+          )
+          onClick=(_event => send(AddSubtask(task.id)))>
           (text("Add subtask"))
         </button>
-        <button onClick=((_event) => onDelete(task))> (text("delete")) </button>
+        <button onClick=(_event => onDelete(task))>
+          (text("delete"))
+        </button>
         (
           if (List.length(task.subtasks) != 0 || addingSubtask) {
             renderList(
@@ -171,41 +192,57 @@ module TaskList = {
               ~addingSubtask,
               ~onCancelAddSubtask=() => send(CancelAddSubtask(task.id)),
               ~onCreate=
-                (title) => {
-                  let newTask = {id: getUUID(), title, completed: false, subtasks: []};
-                  onUpdate({...task, subtasks: task.subtasks @ [newTask]})
+                title => {
+                  let newTask = {
+                    id: getUUID(),
+                    title,
+                    completed: false,
+                    subtasks: [],
+                  };
+                  onUpdate({...task, subtasks: task.subtasks @ [newTask]});
                 },
               ~onDelete=
-                (t) =>
-                  onUpdate({
-                    ...task,
-                    subtasks: List.filter((subtask) => subtask.id != t.id, task.subtasks)
-                  }),
-              ~onUpdate=
-                (t) =>
+                t =>
                   onUpdate({
                     ...task,
                     subtasks:
-                      List.map((subtask) => subtask.id == t.id ? t : subtask, task.subtasks)
-                  })
-            )
+                      List.filter(
+                        subtask => subtask.id != t.id,
+                        task.subtasks,
+                      ),
+                  }),
+              ~onUpdate=
+                t =>
+                  onUpdate({
+                    ...task,
+                    subtasks:
+                      List.map(
+                        subtask => subtask.id == t.id ? t : subtask,
+                        task.subtasks,
+                      ),
+                  }),
+            );
           } else {
-            nullElement
+            nullElement;
           }
         )
-      </li>
+      </li>;
     };
     {
       ...component,
       initialState: () => {addingSubtask: StringMap.empty},
       reducer: (action, state) =>
-        switch action {
+        switch (action) {
         | AddSubtask(id) =>
-          ReasonReact.Update({addingSubtask: state.addingSubtask |> StringMap.add(id, true)})
+          ReasonReact.Update({
+            addingSubtask: state.addingSubtask |> StringMap.add(id, true),
+          })
         | CancelAddSubtask(id) =>
-          ReasonReact.Update({addingSubtask: state.addingSubtask |> StringMap.remove(id)})
+          ReasonReact.Update({
+            addingSubtask: state.addingSubtask |> StringMap.remove(id),
+          })
         },
-      render: (self) =>
+      render: self =>
         renderList(
           self,
           ~tasks,
@@ -213,14 +250,22 @@ module TaskList = {
           ~addingSubtask=true,
           ~onCancelAddSubtask=() => (),
           ~onCreate=
-            (title) => {
-              let task = {id: getUUID(), title, completed: false, subtasks: []};
-              onUpdate(tasks @ [task])
+            title => {
+              let task = {
+                id: getUUID(),
+                title,
+                completed: false,
+                subtasks: [],
+              };
+              onUpdate(tasks @ [task]);
             },
-          ~onDelete=(task) => onUpdate(List.filter(({id}) => id != task.id, tasks)),
-          ~onUpdate=(task) => onUpdate(List.map((t) => t.id == task.id ? task : t, tasks))
-        )
-    }
+          ~onDelete=
+            task => onUpdate(List.filter(({id}) => id != task.id, tasks)),
+          ~onUpdate=
+            task =>
+              onUpdate(List.map(t => t.id == task.id ? task : t, tasks)),
+        ),
+    };
   };
 };
 
@@ -229,18 +274,21 @@ module App = {
   type action =
     | Update(list(task));
   let component = ReasonReact.reducerComponent("App");
-  let make = (_children) => {
+  let make = _children => {
     ...component,
     initialState: () => {tasks: []},
     reducer: (action, _state) =>
-      switch action {
+      switch (action) {
       | Update(tasks) => ReasonReact.Update({tasks: tasks})
       },
     render: ({send, state}) =>
       <div style=(style(~fontFamily="courier", ()))>
         <h1> (text("Next")) </h1>
-        <TaskList onUpdate=((tasks) => send(Update(tasks))) tasks=state.tasks />
-      </div>
+        <TaskList
+          onUpdate=(tasks => send(Update(tasks)))
+          tasks=state.tasks
+        />
+      </div>,
   };
 };
 
