@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "scripts": {
     "build": "bsb -make-world",
-    "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
+    "refmt": "refmt --in-place src/*.re* __tests__/*.re",
+    "start": "bsb -make-world -w",
     "test": "jest",
     "webpack": "webpack -w"
   },
