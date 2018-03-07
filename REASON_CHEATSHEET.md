@@ -26,6 +26,10 @@
   - Creating a map with string keys: `module StringMap = Map.Make(String);`
   - The type of map with string keys, bool values: `StringMap.t(bool)`
   - Adding some values: `StringMap.(empty |> add("foo", true) |> add("bar", false));`
+- Sets:
+  - Creating a set with string keys: `module StringSet = Set.Make(String);`
+  - The type of a set: `StringSet.t`
+  - Adding some key: `StringSet.(empty |> add("foo") |> add("bar"));`
 - React:
   - Components:
     - `ReasonReact.statelessComponent`
