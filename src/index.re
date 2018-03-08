@@ -49,7 +49,15 @@ module TaskInput = {
         onCreate(title);
         send(Reset);
       };
-      <span style=(style(~display="inline-block", ~padding="8px", ()))>
+      <div
+        style=(
+          style(
+            ~borderTop="1px dotted #eee",
+            ~marginTop="8px",
+            ~padding="8px",
+            (),
+          )
+        )>
         <input
           _type="text"
           onChange=(
@@ -89,7 +97,7 @@ module TaskInput = {
           | None => nullElement
           }
         )
-      </span>;
+      </div>;
     },
   };
 };
@@ -168,10 +176,7 @@ module TaskList = {
               _event => onUpdate({...task, completed: ! task.completed})
             )
           />
-          <span style=(style(~color="#ccc", ()))>
-            (text(task.id ++ ":"))
-          </span>
-          (text(" " ++ task.title ++ " "))
+          <span title=task.id> (text(" " ++ task.title ++ " ")) </span>
         </label>
         <button
           disabled=(
