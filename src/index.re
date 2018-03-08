@@ -94,7 +94,7 @@ module TaskInput = {
   };
 };
 
-/* TODO: Clicking on any "add task" button should hide all the others.
+/* TODO: On clicking on any "add task" button we hide all the others.
  * If any other add task field already has input in it, create the task.
  * Implies that maybe we don't need an actual map, if there can only be one at a
  * time.
@@ -105,7 +105,7 @@ module TaskList = {
   type state = {addingSubtask: StringSet.t};
   type action =
     | AddSubtask(string)
-    | CancelAddSubtask(string);
+    | CancelAddSubtask;
   let component = ReasonReact.reducerComponent("TaskList");
   let make = (~onUpdate, ~tasks, _children) => {
     let rec renderList =
@@ -190,7 +190,7 @@ module TaskList = {
               ~tasks=task.subtasks,
               ~level=level + 1,
               ~addingSubtask,
-              ~onCancelAddSubtask=() => send(CancelAddSubtask(task.id)),
+              ~onCancelAddSubtask=() => send(CancelAddSubtask),
               ~onCreate=
                 title => {
                   let newTask = {
@@ -231,16 +231,14 @@ module TaskList = {
     {
       ...component,
       initialState: () => {addingSubtask: StringSet.empty},
-      reducer: (action, state) =>
+      reducer: (action, _state) =>
         switch (action) {
         | AddSubtask(id) =>
           ReasonReact.Update({
-            addingSubtask: state.addingSubtask |> StringSet.add(id),
+            addingSubtask: StringSet.empty |> StringSet.add(id),
           })
-        | CancelAddSubtask(id) =>
-          ReasonReact.Update({
-            addingSubtask: state.addingSubtask |> StringSet.remove(id),
-          })
+        | CancelAddSubtask =>
+          ReasonReact.Update({addingSubtask: StringSet.empty})
         },
       render: self =>
         renderList(
