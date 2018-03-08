@@ -29,21 +29,39 @@ let escapeKey = 27;
 let returnKey = 13;
 
 module TaskInput = {
-  type state = {newTaskTitle: string};
+  type state = {
+    newTaskTitle: string,
+    inputRef: ref(option(Dom.element)),
+  };
   type action =
     | EditNewTaskTitle(string)
     | Reset;
   let component = ReasonReact.reducerComponent("TaskInput");
+  let setInputRef = (r, {ReasonReact.state}) =>
+    state.inputRef := Js.Nullable.toOption(r);
   let make = (~onCancel=?, ~onCreate, _children) => {
     ...component,
-    initialState: () => {newTaskTitle: ""},
-    reducer: (action, _state) =>
+    initialState: () => {newTaskTitle: "", inputRef: ref(None)},
+    didMount: self =>
+      switch (self.state.inputRef^) {
+      | Some(input) =>
+        ReasonReact.SideEffects(
+          (
+            _self => {
+              let node = ReactDOMRe.domElementToObj(input);
+              node##focus();
+            }
+          ),
+        )
+      | None => ReasonReact.NoUpdate
+      },
+    reducer: (action, state) =>
       switch (action) {
       | EditNewTaskTitle(newTaskTitle) =>
-        ReasonReact.Update({newTaskTitle: newTaskTitle})
-      | Reset => ReasonReact.Update({newTaskTitle: ""})
+        ReasonReact.Update({...state, newTaskTitle})
+      | Reset => ReasonReact.Update({...state, newTaskTitle: ""})
       },
-    render: ({state, send}) => {
+    render: ({handle, state, send}) => {
       let nextTaskTitle = String.trim(state.newTaskTitle);
       let create = title => {
         onCreate(title);
@@ -83,6 +101,7 @@ module TaskInput = {
             }
           )
           placeholder="new task"
+          ref=(handle(setInputRef))
           value=state.newTaskTitle
         />
         <button
