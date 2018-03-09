@@ -43,15 +43,8 @@ module TaskInput = {
     didMount: self =>
       switch (self.state.inputRef^) {
       | Some(input) =>
-        ReasonReact.SideEffects(
-          (
-            _self => {
-              let node = ReactDOMRe.domElementToObj(input);
-              node##focus();
-            }
-          ),
-        )
-        |> ignore
+        let node = ReactDOMRe.domElementToObj(input);
+        node##focus();
       | None => ()
       },
     reducer: (action, state) =>
@@ -76,20 +69,16 @@ module TaskInput = {
           )
         )>
         <input
-          _type="text"
+          type_="text"
           onChange=(
             event =>
-              send(
-                EditNewTaskTitle(
-                  ReactDOMRe.domElementToObj(ReactEventRe.Form.target(event))##value,
-                ),
-              )
+              send(EditNewTaskTitle(ReactEvent.Form.target(event)##value))
           )
           onKeyDown=(
             event => {
-              let keyCode = ReactEventRe.Keyboard.keyCode(event);
+              let keyCode = ReactEvent.Keyboard.keyCode(event);
               if (nextTaskTitle != "" && keyCode === returnKey) {
-                ReactEventRe.Keyboard.preventDefault(event);
+                ReactEvent.Keyboard.preventDefault(event);
                 create(nextTaskTitle);
               } else if (keyCode === escapeKey) {
                 switch (onCancel) {
@@ -188,7 +177,7 @@ module TaskList = {
             )
           )>
           <input
-            _type="checkbox"
+            type_="checkbox"
             checked=task.completed
             onChange=(
               _event => onUpdate({...task, completed: ! task.completed})
