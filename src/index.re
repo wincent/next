@@ -1,14 +1,12 @@
-open Js.Boolean; /* For `to_js_boolean`. */
-
 open Uuid;
 
-let elementsArray = ReasonReact.arrayToElement;
+let elementsArray = ReasonReact.array;
 
 let elementsList = l => elementsArray(Array.of_list(l));
 
-let nullElement = ReasonReact.nullElement;
+let nullElement = ReasonReact.null;
 
-let text = ReasonReact.stringToElement;
+let text = ReasonReact.string;
 
 let style = ReactDOMRe.Style.make;
 
@@ -53,7 +51,8 @@ module TaskInput = {
             }
           ),
         )
-      | None => ReasonReact.NoUpdate
+        |> ignore
+      | None => ()
       },
     reducer: (action, state) =>
       switch (action) {
@@ -105,7 +104,7 @@ module TaskInput = {
           value=state.newTaskTitle
         />
         <button
-          disabled=(to_js_boolean(nextTaskTitle == ""))
+          disabled=(nextTaskTitle == "")
           onClick=(_event => create(state.newTaskTitle))>
           (text("Add Task"))
         </button>
@@ -190,7 +189,7 @@ module TaskList = {
           )>
           <input
             _type="checkbox"
-            checked=(to_js_boolean(task.completed))
+            checked=task.completed
             onChange=(
               _event => onUpdate({...task, completed: ! task.completed})
             )
@@ -198,9 +197,7 @@ module TaskList = {
           <span title=task.id> (text(" " ++ task.title ++ " ")) </span>
         </label>
         <button
-          disabled=(
-            state.addingSubtask |> StringSet.mem(task.id) |> to_js_boolean
-          )
+          disabled=(state.addingSubtask |> StringSet.mem(task.id))
           onClick=(_event => send(AddSubtask(task.id)))>
           (text("Add subtask"))
         </button>
