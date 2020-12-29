@@ -140,6 +140,7 @@ What do we want to do for tasks that are in an area but not assigned to a specif
 - `next edit ID`: open buffer in `$EDITOR` with all metadata exploded out onto rows; changes made in the buffer get saved back to disk.
 - `next move ID @AREA/PROJECT`: moves a project
 - `next config`: read and write config values
+- `next init`: creates a `.nextrc` file for a project
 - `next ls|list PATTERN`: search/list tasks
 - `next repl`: interactive command-line mode
 - `next show ANYTHING`: show info for whatever is identified by `ANYTHING` (may be able to force item type with `task:ID` or `project:foo` or `@foo` etc)
