@@ -8,6 +8,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
+    "build": "tsc",
     "format": "prettier --write \"**/*.{json,md}\"",
     "format:check": "prettier --list-different \"**/*.{json,md}\""
   },

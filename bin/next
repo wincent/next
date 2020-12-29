@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+
+const main = require('../lib/main').default;
+
+main()
+  .catch((error) => {
+    console.log(error);
+    process.exit(1);
+  });
