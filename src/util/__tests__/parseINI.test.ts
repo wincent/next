@@ -19,6 +19,13 @@ describe('parseINI()', () => {
     });
   });
 
+  it('parses the simplest possible config', () => {
+    expect(parseINI('foo = bar')).toEqual({
+      foo: 'bar',
+      [parseINI.SECTIONS]: {},
+    });
+  });
+
   it('ignores comments', () => {
     const example = `
       ; hey, I'm a comment

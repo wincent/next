@@ -14,7 +14,7 @@ const VALUE_REGEXP = /[ \t]*.*?(?:\r?\n|$)/;
 
 const SECTIONS = Symbol('sections');
 
-type INI = {
+export type INI = {
   [key: string]: string;
   [SECTIONS]: {
     [section: string]: {
