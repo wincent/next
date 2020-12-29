@@ -10,10 +10,9 @@ type INI = {
   [SECTIONS]: {
     [section: string]: {
       [key: string]: string;
-    }
-  }
+    };
+  };
 };
-
 
 export default function parseINI(input: string): INI {
   return {

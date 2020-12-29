@@ -1,0 +1,5 @@
+/**
+ * SPDX-FileCopyrightText: Copyright <%= YEAR %> Greg Hurrell
+ * SPDX-License-Identifier: MIT
+ */
+

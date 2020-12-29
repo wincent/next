@@ -3,6 +3,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-export default async function main() {
+export default async function main(): Promise<void> {
   console.log('Hello, world');
 }
