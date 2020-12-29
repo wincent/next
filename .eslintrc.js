@@ -13,7 +13,7 @@ module.exports = {
   ],
   overrides: [
     {
-      files: ['*.js'],
+      files: ['*.js', 'bin/*'],
       env: {node: true},
     },
   ],

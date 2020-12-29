@@ -1,9 +1,95 @@
 #!/usr/bin/env node
 
-const main = require('../lib/main').default;
+/**
+ * SPDX-FileCopyrightText: Copyright 2020 Greg Hurrell
+ * SPDX-License-Identifier: MIT
+ */
 
-main()
-  .catch((error) => {
-    console.log(error);
-    process.exit(1);
-  });
+/* eslint-disable @typescript-eslint/no-var-requires */
+
+const fs = require('fs');
+const path = require('path');
+
+const isTTY = process.stdout.isTTY;
+
+const BOLD = isTTY ? '\x1b[1m' : '';
+const GREEN = isTTY ? '\x1b[32m' : '';
+const RED = isTTY ? '\x1b[31m' : '';
+const RESET = isTTY ? '\x1b[0m' : '';
+const YELLOW = isTTY ? '\x1b[33m' : '';
+
+function handleError(error) {
+  log(error);
+  process.exit(1);
+}
+
+function log(...messages) {
+  console.log(...messages);
+}
+
+/**
+ * Helper that is only active during development that reminds me when I'm not
+ * using up-to-date build resources.
+ */
+function preflight() {
+  try {
+    let problems = 0;
+
+    if (fs.existsSync(path.join(__dirname, '..', '.git', 'config'))) {
+      log(
+        `${
+          GREEN + BOLD
+        }[debug] Running from Git repo; checking for stale build artifacts${RESET}`
+      );
+
+      const src = path.join(__dirname, '..', 'src');
+      const lib = path.join(__dirname, '..', 'lib');
+
+      walk(src, (file) => {
+        if (path.extname(file) === '.ts') {
+          const built = path
+            .join(lib, path.relative(src, file))
+            .replace(/\.ts$/, '.js');
+
+          if (
+            !fs.existsSync(built) ||
+            fs.statSync(built).mtimeMs < fs.statSync(file).mtimeMs
+          ) {
+            problems++;
+          }
+        }
+      });
+
+      if (problems) {
+        log(
+          `${
+            YELLOW + BOLD
+          }[warn] Stale or missing build artifacts: ${problems} (run "yarn build")${RESET}`
+        );
+      }
+    }
+  } catch (error) {
+    log(`${RED + BOLD}[error] Preflight caught ${error}${RESET}`);
+  }
+}
+
+function walk(root, callback) {
+  for (const entry of fs.readdirSync(root, {withFileTypes: true})) {
+    const current = path.join(root, entry.name);
+    if (entry.isDirectory()) {
+      walk(current, callback);
+    } else {
+      callback(current);
+    }
+  }
+}
+
+try {
+  preflight();
+
+  const main = require('../lib/main').default;
+
+  main().catch(handleError);
+} catch (error) {
+  handleError(error);
+}
