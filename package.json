@@ -9,6 +9,7 @@
   "private": false,
   "scripts": {
     "build": "tsc",
+    "ci": "yarn format:check && yarn lint && yarn test && yarn build",
     "format": "prettier --write \"**/*.{js,json,md,ts,yml}\"",
     "format:check": "prettier --list-different \"**/*.{js,json,md,ts,yml}\"",
     "lint": "eslint \"**/*.{js,ts}\"",
