@@ -152,10 +152,16 @@ What do we want to do for tasks that are in an area but not assigned to a specif
 - `next -c config`: provide explicit path to config; otherwise we just walk up to nearest `.nextrc` (or `~/.config/next/nextrc`)
 - `next -g/--global`: force operation on global task list (ie. in a project with a local `.nextrc`, this ignores it and forces the tool to look for `~/.config/next/nextrc`)
 
-# Why not use one of the 1.21 zillion existing command-line TODO apps out there?
+# FAQ
+
+## Why not use one of the 1.21 zillion existing command-line TODO apps out there?
 
 - Building things is fun.
 - I haven't seen one yet that uses Git for merging syncing.
+
+## Why INI instead of TOML?
+
+- ["An INI critique of TOML"](https://github.com/madmurphy/libconfini/wiki/An-INI-critique-of-TOML)
 
 # Prior art
 
