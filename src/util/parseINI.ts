@@ -27,21 +27,25 @@ function formatError(scanner: StringScanner) {
   const [line, column] = scanner.location;
 
   return (
-    `line ${line}, column ${column}\n\n` + scanner.context(line, column) + '\n'
+    `line ${line}, column ${column} of ${scanner.description}\n\n` +
+    scanner.context(line, column) +
+    '\n'
   );
 }
 
 /**
  * Crude INI format parser.
+ *
+ * `file` parameter is optional (used only for error reporting).
  */
-export default function parseINI(input: string): INI {
+export default function parseINI(input: string, file?: string): INI {
   const sections: INI[typeof SECTIONS] = {};
 
   const ini = {
     [SECTIONS]: sections,
   };
 
-  const scanner = new StringScanner(input);
+  const scanner = new StringScanner(input, file);
 
   let current: INI | {[key: string]: string} = ini;
 

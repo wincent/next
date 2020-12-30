@@ -17,7 +17,7 @@ type Worktree = {
 export function getWorktrees(): Array<Worktree> {
   const output = git('worktree', 'list', '--porcelain');
 
-  const scanner = new StringScanner(output);
+  const scanner = new StringScanner(output, '`git worktree list --porcelain`');
 
   const worktrees = [];
 
@@ -57,7 +57,7 @@ function scan(pattern: RegExp, scanner: StringScanner): string {
     const [line, column] = scanner.location;
 
     throw new Error(
-      `Expected ${pattern} at line ${line}, column ${column}:\n\n` +
+      `Expected ${pattern} at line ${line}, column ${column} of ${scanner.description}:\n\n` +
         scanner.context(line, column)
     );
   }

@@ -131,4 +131,20 @@ describe('parseINI()', () => {
       [parseINI.SECTIONS]: {},
     });
   });
+
+  it('reports parsing errors', () => {
+    const example = `haha`;
+
+    expect(() => parseINI(example)).toThrow(
+      'Expected value assignment (=) at line 1, column 5 of input string'
+    );
+  });
+
+  it('includes filename in error reports, if provided', () => {
+    const example = `haha`;
+
+    expect(() => parseINI(example, '~/.nextrc')).toThrow(
+      'Expected value assignment (=) at line 1, column 5 of ~/.nextrc'
+    );
+  });
 });

@@ -49,7 +49,7 @@ export default function loadRC(from: string = process.cwd()): INI {
 
   for (const candidate of candidates) {
     if (fs.existsSync(candidate)) {
-      return parseINI(fs.readFileSync(candidate, 'utf8'));
+      return parseINI(fs.readFileSync(candidate, 'utf8'), candidate);
     }
   }
 

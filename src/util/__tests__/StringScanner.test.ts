@@ -109,6 +109,20 @@ describe('StringScanner', () => {
     });
   });
 
+  describe('description', () => {
+    it('defaults to "input string"', () => {
+      const scanner = new StringScanner('');
+
+      expect(scanner.description).toBe('input string');
+    });
+
+    it('uses the value passed to the constructor, if provided', () => {
+      const scanner = new StringScanner('', '/etc/passwd');
+
+      expect(scanner.description).toBe('/etc/passwd');
+    });
+  });
+
   describe('index', () => {
     it('is zero before scanning starts', () => {
       expect(new StringScanner('hey').index).toBe(0);
@@ -149,6 +163,32 @@ describe('StringScanner', () => {
       scanner.scan(/../);
 
       expect(scanner.location).toEqual([2, 3]);
+    });
+
+    describe('regressions', () => {
+      it('reports locations in column 1', () => {
+        const scanner = new StringScanner('food\nfight');
+
+        scanner.scan(/food\n/);
+
+        expect(scanner.location).toEqual([2, 1]);
+      });
+
+      it('reports locations at the end of the input', () => {
+        const scanner = new StringScanner('hello');
+
+        scanner.scan(/hello/);
+
+        expect(scanner.location).toEqual([1, 6]);
+      });
+
+      it('reports locations at the end of a line', () => {
+        const scanner = new StringScanner('food\nfight\n\nnow');
+
+        scanner.scan(/food\nfight/);
+
+        expect(scanner.location).toEqual([2, 6]);
+      });
     });
   });
 });

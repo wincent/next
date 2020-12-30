@@ -12,11 +12,13 @@ export function toAnchoredRegExp(regExp: RegExp): RegExp {
 }
 
 export default class StringScanner {
+  #description?: string;
   #haystack: string;
   #index: number;
   #remaining: string;
 
-  constructor(haystack: string) {
+  constructor(haystack: string, description?: string) {
+    this.#description = description;
     this.#haystack = haystack;
     this.#index = 0;
     this.#remaining = haystack;
@@ -58,6 +60,13 @@ export default class StringScanner {
     return this.#remaining.length === 0;
   }
 
+  /**
+   * For use in error reporting.
+   */
+  get description(): string {
+    return this.#description ?? 'input string';
+  }
+
   get index(): number {
     return this.#index;
   }
@@ -76,8 +85,8 @@ export default class StringScanner {
     }
 
     const startOfCurrentLine = Math.max(
-      this.#haystack.lastIndexOf('\n', this.#index) + 1,
-      this.#haystack.lastIndexOf('\r', this.#index) + 1
+      this.#haystack.lastIndexOf('\n', this.#index - 1) + 1,
+      this.#haystack.lastIndexOf('\r', this.#index - 1) + 1
     );
 
     const column = this.#index - startOfCurrentLine + 1;
@@ -85,8 +94,8 @@ export default class StringScanner {
     let line = 0;
     let index = 0;
 
-    this.#haystack.replace(/[^\r\n]*(?:\r?\n?)/g, (match) => {
-      if (index < this.#index) {
+    this.#haystack.replace(/[^\r\n]*(?:\r?\n|$)/g, (match) => {
+      if (match && index <= this.#index) {
         line++;
       }
 
