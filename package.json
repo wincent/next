@@ -10,6 +10,7 @@
   "scripts": {
     "build": "tsc",
     "ci": "yarn format:check && yarn lint && yarn test && yarn build",
+    "clean": "rm -r lib/*",
     "format": "prettier --write \"**/*.{js,json,md,ts,yml}\" \"bin/*\"",
     "format:check": "prettier --list-different \"**/*.{js,json,md,ts,yml}\" \"bin/*\"",
     "lint": "eslint \"**/*.{js,ts}\" \"bin/*\"",
