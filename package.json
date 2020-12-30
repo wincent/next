@@ -9,6 +9,7 @@
   "private": false,
   "scripts": {
     "build": "tsc",
+    "build:force": "tsc --build --force",
     "build:watch": "tsc --watch",
     "ci": "yarn format:check && yarn lint && yarn test && yarn build",
     "clean": "rm -r lib/*",
