@@ -71,6 +71,28 @@ describe('StringScanner', () => {
     });
   });
 
+  describe('peek()', () => {
+    it('returns true when the pattern will match', () => {
+      const scanner = new StringScanner('words and shit');
+
+      expect(scanner.peek(/\w+/)).toBe(true);
+
+      scanner.scan(/words\s+/);
+
+      expect(scanner.peek(/and/)).toBe(true);
+    });
+
+    it('returns false when the pattern will not match', () => {
+      const scanner = new StringScanner('words and shit');
+
+      expect(scanner.peek(/\d+/)).toBe(false);
+
+      scanner.scan(/words\s+/);
+
+      expect(scanner.peek(/not a match/)).toBe(false);
+    });
+  });
+
   describe('scan()', () => {
     it('scans regular expressions', () => {
       const scanner = new StringScanner('over 9000');

@@ -7,14 +7,15 @@ import StringScanner from './StringScanner';
 import git from './git';
 
 type Worktree = {
-  // TODO: note that we might not need this one; might remove it later
-  HEAD: string;
-  // TODO: inspect what git-worktree returns for detached heads
-  branch: string;
+  bare: boolean;
+  branch?: string;
+  detached: boolean;
   path: string;
 };
 
 export function getWorktrees(): Array<Worktree> {
+  // TODO: print useful error message if not in a Git repo
+  // (probably do that higher up though)
   const output = git('worktree', 'list', '--porcelain');
 
   const scanner = new StringScanner(output, '`git worktree list --porcelain`');
@@ -22,32 +23,51 @@ export function getWorktrees(): Array<Worktree> {
   const worktrees = [];
 
   while (!scanner.atEnd) {
-    // TODO: see `man git-worktree` for details of porcelain format
-    // (we still need to handle some optional fields like "bare" and "detached",
-    // and might want to future-proof for the additional of additional possible
-    // fields in the future)
-    scan(/worktree\s+/, scanner);
+    let bare = false;
+    let branch = undefined;
+    let detached = false;
 
-    const worktreePath = scan(/[^\n]+\n/, scanner).trim();
+    scan(/worktree /, scanner);
 
-    scan(/HEAD\s+/, scanner);
+    const path = scan(/[^\n]+\n/, scanner).trim();
 
-    const head = scan(/[a-f0-9]{40}\n/, scanner);
+    while (!scanner.atEnd) {
+      if (optional(/bare\n/, scanner)) {
+        bare = true;
+      }
 
-    scan(/branch\s+/, scanner);
+      if (optional(/detached\n/, scanner)) {
+        detached = true;
+      }
 
-    const branch = scan(/[^\n]+\n/, scanner).trim();
+      const label = optional(/[^ ]+ /, scanner);
 
-    scan(/\s+/, scanner);
+      if (label) {
+        const value = scan(/[^\n]+\n/, scanner).trim();
+
+        if (label === 'branch') {
+          branch = value;
+        }
+      }
+
+      if (optional(/\n/, scanner)) {
+        break;
+      }
+    }
 
     worktrees.push({
-      HEAD: head,
+      bare,
       branch,
-      path: worktreePath,
+      detached,
+      path,
     });
   }
 
   return worktrees;
+}
+
+function optional(pattern: RegExp, scanner: StringScanner): string | null {
+  return scanner.scan(pattern);
 }
 
 function scan(pattern: RegExp, scanner: StringScanner): string {

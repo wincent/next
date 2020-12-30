@@ -107,6 +107,10 @@ export default class StringScanner {
     return [line, column];
   }
 
+  peek(pattern: RegExp): boolean {
+    return toAnchoredRegExp(pattern).test(this.#remaining);
+  }
+
   scan(pattern: RegExp): string | null {
     const match = this.#remaining.match(toAnchoredRegExp(pattern));
 
