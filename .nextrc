@@ -1,4 +1,5 @@
 ; vim: ft=ini
 
 branch = tasks
+repo = .
 worktree = tasks

@@ -37,6 +37,7 @@ describe('loadRC()', () => {
   it('finds the project .nextrc file', () => {
     expect(loadRC()).toEqual({
       branch: 'tasks',
+      repo: '.',
       worktree: 'tasks',
       [parseINI.SECTIONS]: {},
     });

@@ -12,6 +12,7 @@ import {getWorktrees} from './util/worktree';
 
 export default async function main(): Promise<void> {
   // TODO: make subcommands work...
+  // TODO: respect rc.repo if present
   const rc = loadRC();
 
   if (rc) {
@@ -19,6 +20,7 @@ export default async function main(): Promise<void> {
       const expectedBranch = `refs/heads/${rc.branch}`;
       const expectedPath = path.join(process.cwd(), rc.worktree);
 
+      // TODO: before this, check that we're in a git repo...
       const worktrees = getWorktrees();
 
       const worktree = worktrees.find(({branch, path}) => {

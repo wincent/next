@@ -127,6 +127,7 @@ describe('parseINI()', () => {
 
     expect(parseINI(nextrc)).toEqual({
       branch: 'tasks',
+      repo: '.',
       worktree: 'tasks',
       [parseINI.SECTIONS]: {},
     });
