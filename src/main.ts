@@ -3,22 +3,24 @@
  * SPDX-License-Identifier: MIT
  */
 
-import path from 'path';
-
-import loadRC from './util/loadRC';
+import getConfig from './getConfig';
 import log from './util/log';
 import prompt from './util/prompt';
 import {getWorktrees} from './util/worktree';
 
 export default async function main(): Promise<void> {
   // TODO: make subcommands work...
+  // TODO: make `next add` work so that I can start dog-fooding this thing
   // TODO: respect rc.repo if present
-  const rc = loadRC();
+  const config = getConfig();
 
-  if (rc) {
-    if (rc.worktree && rc.branch) {
-      const expectedBranch = `refs/heads/${rc.branch}`;
-      const expectedPath = path.join(process.cwd(), rc.worktree);
+  if (config.location === null) {
+    // Offer to create rc file?
+  } else {
+    if (config.worktree) {
+      // Make sure it actually is a worktree.
+      const expectedBranch = `refs/heads/${config.branch}`;
+      const expectedPath = config.dataDirectory;
 
       // TODO: before this, check that we're in a git repo...
       const worktrees = getWorktrees();
@@ -29,16 +31,19 @@ export default async function main(): Promise<void> {
 
       if (!worktree) {
         log.notice(
-          `Worktree does not exist for branch "${rc.branch}" at path "${rc.worktree}"`
+          `Worktree does not exist for branch "${config.branch}" at path "${config.worktree}"`
         );
+        // NOTE: should only offer this if nothing already at config.worktree
+        // and branch not already checked out at some other worktree
         if (prompt('Do you want me to create it? [y/n]')) {
           console.log('creating...');
         }
       } else {
         // great... it exists, we can proceed...
       }
+    } else {
+      // Validate dataDirectory exists and is a Git repo.
     }
-  } else {
-    // TODO: offer to create it
+    // Validate config.branch is checked out.
   }
 }

@@ -40,7 +40,7 @@ export function getWorktrees(): Array<Worktree> {
         detached = true;
       }
 
-      const label = optional(/[^ ]+ /, scanner);
+      const label = optional(/[^ ]+ /, scanner)?.trim();
 
       if (label) {
         const value = scan(/[^\n]+\n/, scanner).trim();

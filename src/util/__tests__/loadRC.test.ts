@@ -39,6 +39,9 @@ describe('loadRC()', () => {
       branch: 'tasks',
       repo: '.',
       worktree: 'tasks',
+      [loadRC.LOCATION]: path.normalize(
+        path.join(__dirname, '..', '..', '..', '.nextrc')
+      ),
       [parseINI.SECTIONS]: {},
     });
   });
@@ -46,12 +49,9 @@ describe('loadRC()', () => {
   it('finds ~/.config/next/nextrc when starting under $HOME', () => {
     withScratchDirectory((scratch) => {
       withHome(scratch, () => {
+        const rcPath = path.resolve('.config', 'next', 'nextrc');
         fs.mkdirSync(path.join('.config', 'next'), {recursive: true});
-        fs.writeFileSync(
-          path.join('.config', 'next', 'nextrc'),
-          'test = stuff',
-          'utf8'
-        );
+        fs.writeFileSync(rcPath, 'test = stuff', 'utf8');
 
         const workingDirectory = path.join('some', 'other', 'dir');
         fs.mkdirSync(workingDirectory, {recursive: true});
@@ -59,6 +59,7 @@ describe('loadRC()', () => {
 
         expect(loadRC()).toEqual({
           test: 'stuff',
+          [loadRC.LOCATION]: rcPath,
           [parseINI.SECTIONS]: {},
         });
       });
@@ -68,7 +69,8 @@ describe('loadRC()', () => {
   it('finds ~/.nextrc when starting under $HOME', () => {
     withScratchDirectory((scratch) => {
       withHome(scratch, () => {
-        fs.writeFileSync(path.join('.nextrc'), 'test = stuff', 'utf8');
+        const rcPath = path.resolve('.nextrc');
+        fs.writeFileSync(rcPath, 'test = stuff', 'utf8');
 
         const workingDirectory = path.join('some', 'other', 'dir');
         fs.mkdirSync(workingDirectory, {recursive: true});
@@ -76,6 +78,7 @@ describe('loadRC()', () => {
 
         expect(loadRC()).toEqual({
           test: 'stuff',
+          [loadRC.LOCATION]: rcPath,
           [parseINI.SECTIONS]: {},
         });
       });
@@ -85,18 +88,16 @@ describe('loadRC()', () => {
   it('finds ~/.config/next/nextrc when starting outside $HOME', () => {
     withScratchDirectory((scratch) => {
       withHome(scratch, () => {
+        const rcPath = path.resolve('.config', 'next', 'nextrc');
         fs.mkdirSync(path.join('.config', 'next'), {recursive: true});
-        fs.writeFileSync(
-          path.join('.config', 'next', 'nextrc'),
-          'test = stuff',
-          'utf8'
-        );
+        fs.writeFileSync(rcPath, 'test = stuff', 'utf8');
 
         const workingDirectory = os.tmpdir();
         process.chdir(workingDirectory);
 
         expect(loadRC()).toEqual({
           test: 'stuff',
+          [loadRC.LOCATION]: rcPath,
           [parseINI.SECTIONS]: {},
         });
       });
@@ -106,13 +107,15 @@ describe('loadRC()', () => {
   it('finds ~/.nextrc when starting outside $HOME', () => {
     withScratchDirectory((scratch) => {
       withHome(scratch, () => {
-        fs.writeFileSync(path.join('.nextrc'), 'test = stuff', 'utf8');
+        const rcPath = path.resolve('.nextrc');
+        fs.writeFileSync(rcPath, 'test = stuff', 'utf8');
 
         const workingDirectory = os.tmpdir();
         process.chdir(workingDirectory);
 
         expect(loadRC()).toEqual({
           test: 'stuff',
+          [loadRC.LOCATION]: rcPath,
           [parseINI.SECTIONS]: {},
         });
       });

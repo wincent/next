@@ -11,7 +11,13 @@ import parseINI from './parseINI';
 
 import type {INI} from './parseINI';
 
-export default function loadRC(from: string = process.cwd()): INI {
+const LOCATION = Symbol('location');
+
+export type RC = INI & {
+  [LOCATION]: string | null;
+};
+
+export default function loadRC(from: string = process.cwd()): RC {
   const home = process.env.HOME;
 
   if (!home || !fs.existsSync(home)) {
@@ -49,7 +55,10 @@ export default function loadRC(from: string = process.cwd()): INI {
 
   for (const candidate of candidates) {
     if (fs.existsSync(candidate)) {
-      return parseINI(fs.readFileSync(candidate, 'utf8'), candidate);
+      return {
+        ...parseINI(fs.readFileSync(candidate, 'utf8'), candidate),
+        [LOCATION]: candidate,
+      };
     }
   }
 
@@ -57,5 +66,10 @@ export default function loadRC(from: string = process.cwd()): INI {
     'No .nextrc file found; do you want to create one with `next init`?'
   );
 
-  return {[parseINI.SECTIONS]: {}};
+  return {
+    [LOCATION]: null,
+    [parseINI.SECTIONS]: {},
+  };
 }
+
+loadRC.LOCATION = LOCATION;
