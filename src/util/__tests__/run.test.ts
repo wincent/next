@@ -21,4 +21,10 @@ describe('run()', () => {
   it('throws when the command exits with a non-zero status', () => {
     expect(() => run('false')).toThrow('Command "false" exited with status 1');
   });
+
+  it('throws when the command exits due to a signal', () => {
+    expect(() => run('bash', '-c', 'kill $$')).toThrow(
+      'Command "bash -c kill $$" exited due to signal SIGTERM'
+    );
+  });
 });
