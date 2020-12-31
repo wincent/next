@@ -4,12 +4,12 @@
  */
 
 import getConfig from './getConfig';
+import parseArgs from './parseArgs';
 import log from './util/log';
 import prompt from './util/prompt';
 import {getWorktrees} from './util/worktree';
 
 export default async function main(): Promise<void> {
-  // TODO: make subcommands work...
   // TODO: make `next add` work so that I can start dog-fooding this thing
   // TODO: respect rc.repo if present
   const config = getConfig();
@@ -46,4 +46,8 @@ export default async function main(): Promise<void> {
     }
     // Validate config.branch is checked out.
   }
+
+  const {subcommand, options} = parseArgs(process.argv);
+
+  console.log('subcommand', subcommand, options);
 }
