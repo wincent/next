@@ -6,17 +6,23 @@
 export type Invocation = {
   args: Array<string>;
   options: {
-    config?: string;
+    config: string | false;
     global: boolean;
+    help: boolean;
     // quiet: boolean;
     // verbose: boolean;
-    // [key: string]: string | boolean;
+    [key: string]: string | boolean;
   };
   subcommand: typeof SUBCOMMANDS[number] | null;
 };
 
-// TODO: actually import the files and read description strings and options
-// schemas from them?
+type Schema = {
+  [key: string]: {
+    description: string;
+    type: 'boolean' | 'string';
+  };
+};
+
 const SUBCOMMANDS = ['add', 'help', 'init'] as const;
 
 export default function parseArgs([
@@ -25,11 +31,15 @@ export default function parseArgs([
   ...rest
 ]: Array<string>): Invocation {
   const args = [];
+  const options: {[key: string]: boolean | string} = {};
 
-  let config = undefined;
+  let config: string | false = false;
   let global = false;
+  let help = false;
   let raw = false;
   let subcommand: Invocation['subcommand'] = null;
+
+  let schema: Schema = {};
 
   let arg;
 
@@ -39,18 +49,46 @@ export default function parseArgs([
     } else if (arg === '--') {
       raw = true;
     } else if (arg === '-c' || arg === '--config') {
-      if (rest.length && !rest[0].startsWith('-')) {
-        config = rest.shift();
+      const next = rest.shift();
+
+      if (next && !next.startsWith('-')) {
+        config = next;
       } else {
         throw new Error('-c/--config requires a filename argument');
       }
     } else if (arg === '-g' || arg === '--global') {
       global = true;
+    } else if (arg === '-h' || arg === '--help') {
+      help = true;
+      break;
     } else if (arg.startsWith('-')) {
+      if (schema) {
+        if (arg in schema) {
+          if (schema[arg].type === 'boolean') {
+            options[arg] = true;
+          } else {
+            const next = rest.shift();
+
+            if (next && !next.startsWith('-')) {
+              options[arg] = next;
+            } else {
+              throw new Error(`${arg} requires an argument`);
+            }
+          }
+          break;
+        }
+      }
       throw new Error(`unrecognized option: ${arg}`);
     } else if (subcommand === null) {
       if (isSubcommand(arg)) {
         subcommand = arg;
+        if (subcommand === 'add') {
+          schema = require('./subcommands/add').options;
+        } else if (subcommand === 'help') {
+          schema = require('./subcommands/help').options;
+        } else if (subcommand === 'init') {
+          schema = require('./subcommands/init').options;
+        }
       } else {
         throw new Error(`unrecognized subcommand: ${arg}`);
       }
@@ -64,6 +102,8 @@ export default function parseArgs([
     options: {
       config,
       global,
+      help,
+      ...options,
     },
     subcommand,
   };

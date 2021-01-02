@@ -14,7 +14,13 @@ export default async function main(): Promise<void> {
 
   // TODO: make `next add` work so that I can start dog-fooding this thing
   // TODO: respect rc.repo if present
-  const config = getConfig(invocation.options.config);
+  const config = getConfig(invocation.options.config || undefined);
+
+  if (invocation.options.help) {
+    // TODO: show help and exit
+    // if we have a subcommand, show subcommand-specific help
+    // offer to show man page with `help subcommand`
+  }
 
   if (config.location === null) {
     // Offer to create rc file?

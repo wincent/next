@@ -14,8 +14,9 @@ describe('parseArgs()', () => {
       expect(parseArgs([node, script])).toEqual({
         args: [],
         options: {
-          config: undefined,
+          config: false,
           global: false,
+          help: false,
         },
         subcommand: null,
       });
@@ -25,8 +26,9 @@ describe('parseArgs()', () => {
       expect(parseArgs([node, script, '-g'])).toEqual({
         args: [],
         options: {
-          config: undefined,
+          config: false,
           global: true,
+          help: false,
         },
         subcommand: null,
       });
@@ -34,8 +36,9 @@ describe('parseArgs()', () => {
       expect(parseArgs([node, script, '--global'])).toEqual({
         args: [],
         options: {
-          config: undefined,
+          config: false,
           global: true,
+          help: false,
         },
         subcommand: null,
       });
@@ -47,6 +50,7 @@ describe('parseArgs()', () => {
         options: {
           config: 'some-file',
           global: false,
+          help: false,
         },
         subcommand: null,
       });
@@ -56,6 +60,7 @@ describe('parseArgs()', () => {
         options: {
           config: 'some-file',
           global: false,
+          help: false,
         },
         subcommand: null,
       });
@@ -77,6 +82,7 @@ describe('parseArgs()', () => {
         options: {
           config: 'b',
           global: false,
+          help: false,
         },
         subcommand: null,
       });
@@ -88,6 +94,7 @@ describe('parseArgs()', () => {
         options: {
           config: 'some-file',
           global: true,
+          help: false,
         },
         subcommand: null,
       });
@@ -98,6 +105,41 @@ describe('parseArgs()', () => {
         'unrecognized option: --sudo'
       );
     });
+
+    it('groks the -h/--help switches', () => {
+      expect(parseArgs([node, script, '-h'])).toEqual({
+        args: [],
+        options: {
+          config: false,
+          global: false,
+          help: true,
+        },
+        subcommand: null,
+      });
+
+      expect(parseArgs([node, script, '--help'])).toEqual({
+        args: [],
+        options: {
+          config: false,
+          global: false,
+          help: true,
+        },
+        subcommand: null,
+      });
+    });
+
+    it('returns immediately as soon as it sees -h or --help', () => {
+      // ie. it ignores subsequent invalid options
+      expect(parseArgs([node, script, 'add', '--help', '--garbage'])).toEqual({
+        args: [],
+        options: {
+          config: false,
+          global: false,
+          help: true,
+        },
+        subcommand: 'add',
+      });
+    });
   });
 
   describe('with a subcommand', () => {
@@ -105,8 +147,9 @@ describe('parseArgs()', () => {
       expect(parseArgs([node, script, 'add'])).toEqual({
         args: [],
         options: {
-          config: undefined,
+          config: false,
           global: false,
+          help: false,
         },
         subcommand: 'add',
       });
@@ -129,8 +172,9 @@ describe('parseArgs()', () => {
       expect(parseArgs([node, script, '-g', 'add'])).toEqual({
         args: [],
         options: {
-          config: undefined,
+          config: false,
           global: true,
+          help: false,
         },
         subcommand: 'add',
       });
@@ -139,8 +183,22 @@ describe('parseArgs()', () => {
       expect(parseArgs([node, script, 'add', '--global'])).toEqual({
         args: [],
         options: {
-          config: undefined,
+          config: false,
           global: true,
+          help: false,
+        },
+        subcommand: 'add',
+      });
+    });
+
+    it('accepts switches specific to a subcommand', () => {
+      expect(parseArgs([node, script, 'add', '-v'])).toEqual({
+        args: [],
+        options: {
+          '-v': true,
+          config: false,
+          global: false,
+          help: false,
         },
         subcommand: 'add',
       });
@@ -150,8 +208,9 @@ describe('parseArgs()', () => {
       expect(parseArgs([node, script, 'add', 'buy', 'milk'])).toEqual({
         args: ['buy', 'milk'],
         options: {
-          config: undefined,
+          config: false,
           global: false,
+          help: false,
         },
         subcommand: 'add',
       });
@@ -175,6 +234,7 @@ describe('parseArgs()', () => {
         options: {
           config: 'conf',
           global: false,
+          help: false,
         },
         subcommand: 'add',
       });
