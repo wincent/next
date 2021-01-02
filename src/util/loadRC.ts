@@ -17,7 +17,18 @@ export type RC = INI & {
   [LOCATION]: string | null;
 };
 
-export default function loadRC(from: string = process.cwd()): RC {
+export default function loadRC(location?: string): RC {
+  if (location) {
+    if (fs.existsSync(location)) {
+      return {
+        ...parseINI(fs.readFileSync(location, 'utf8'), location),
+        [LOCATION]: path.resolve(location),
+      };
+    } else {
+      throw new Error(`${location} does not exist`);
+    }
+  }
+
   const home = process.env.HOME;
 
   if (!home || !fs.existsSync(home)) {
@@ -26,7 +37,7 @@ export default function loadRC(from: string = process.cwd()): RC {
 
   const candidates = [];
 
-  let current = from;
+  let current = process.cwd();
 
   let seenHome = false;
 

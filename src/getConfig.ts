@@ -21,8 +21,8 @@ type Config = {
 
 const PLACEHOLDER = '«placeholder»';
 
-export default function getConfig(): Config {
-  const rc = loadRC();
+export default function getConfig(location?: string): Config {
+  const rc = loadRC(location);
 
   const config: Config = {
     branch: rc.branch || 'master',

@@ -139,6 +139,27 @@ describe('loadRC()', () => {
       'No .nextrc file found; do you want to create one with `next init`?'
     );
   });
+
+  it('loads from an explicitly passed file location', () => {
+    withScratchDirectory(() => {
+      const rcPath = path.resolve('my.ini');
+      fs.writeFileSync(rcPath, 'hello = world', 'utf8');
+
+      process.chdir(os.homedir());
+
+      expect(loadRC(rcPath)).toEqual({
+        hello: 'world',
+        [loadRC.LOCATION]: rcPath,
+        [parseINI.SECTIONS]: {},
+      });
+    });
+  });
+
+  it('complains if the explicitly passed wile location does not exist', () => {
+    expect(() => loadRC('/random/file/path')).toThrow(
+      '/random/file/path does not exist'
+    );
+  });
 });
 
 function withHome(override: string | undefined, callback: () => void) {
