@@ -51,20 +51,17 @@ export default async function main(): Promise<void> {
 
   switch (invocation.subcommand) {
     case 'add': {
-      const {default: add} = await import('./subcommands/add');
-      add(invocation);
+      (await import('./subcommands/add')).default(invocation);
       break;
     }
 
     case 'help': {
-      const {default: help} = await import('./subcommands/help');
-      help(invocation);
+      (await import('./subcommands/help')).default(invocation);
       break;
     }
 
     case 'init': {
-      const {default: init} = await import('./subcommands/init');
-      init(invocation);
+      (await import('./subcommands/init')).default(invocation);
       break;
     }
 
