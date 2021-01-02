@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-type Invocation = {
+export type Invocation = {
   args: Array<string>;
   options: {
     config?: string;

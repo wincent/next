@@ -10,11 +10,11 @@ import prompt from './util/prompt';
 import {getWorktrees} from './util/worktree';
 
 export default async function main(): Promise<void> {
-  const {subcommand, options} = parseArgs(process.argv);
+  const invocation = parseArgs(process.argv);
 
   // TODO: make `next add` work so that I can start dog-fooding this thing
   // TODO: respect rc.repo if present
-  const config = getConfig(options.config);
+  const config = getConfig(invocation.options.config);
 
   if (config.location === null) {
     // Offer to create rc file?
@@ -49,5 +49,28 @@ export default async function main(): Promise<void> {
     // Validate config.branch is checked out.
   }
 
-  console.log('subcommand', subcommand, options);
+  switch (invocation.subcommand) {
+    case 'add': {
+      const {default: add} = await import('./subcommands/add');
+      add(invocation);
+      break;
+    }
+
+    case 'help': {
+      const {default: help} = await import('./subcommands/help');
+      help(invocation);
+      break;
+    }
+
+    case 'init': {
+      const {default: init} = await import('./subcommands/init');
+      init(invocation);
+      break;
+    }
+
+    case null: {
+      // TODO: default list view here
+      break;
+    }
+  }
 }
