@@ -5,7 +5,7 @@
 
 import type {Invocation} from '../parseArgs';
 
-export default function help({args, options}: Invocation): void {
+export default function _help({args, options}: Invocation): void {
   console.log('helping', args, options);
   // TODO: require all the other commands and show their help
   // if passed an argument, show markdown help for that command
