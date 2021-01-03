@@ -20,7 +20,7 @@ export default async function main(): Promise<void> {
     // TODO: show help and exit
     // if we have a subcommand, show subcommand-specific help
     // offer to show man page with `help subcommand`
-    (await import('./subcommands/help')).default({
+    await (await import('./subcommands/help')).default({
       args: invocation.subcommand
         ? [invocation.subcommand, ...invocation.args]
         : invocation.args,
@@ -66,17 +66,17 @@ export default async function main(): Promise<void> {
 
   switch (invocation.subcommand) {
     case 'add': {
-      (await import('./subcommands/add')).default(invocation);
+      await (await import('./subcommands/add')).default(invocation);
       break;
     }
 
     case 'help': {
-      (await import('./subcommands/help')).default(invocation);
+      await (await import('./subcommands/help')).default(invocation);
       break;
     }
 
     case 'init': {
-      (await import('./subcommands/init')).default(invocation);
+      await (await import('./subcommands/init')).default(invocation);
       break;
     }
 

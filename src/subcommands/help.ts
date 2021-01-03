@@ -3,14 +3,21 @@
  * SPDX-License-Identifier: MIT
  */
 
+import child_process from 'child_process';
+import fs from 'fs';
 import path from 'path';
+import os from 'os';
 
+import formatMarkdown from '../util/formatMarkdown';
 import log from '../util/log';
 import {SUBCOMMANDS} from './index';
 
 import type {Invocation, SubcommandsT} from '../parseArgs';
 
-export default function _help({args, options}: Invocation): void {
+export default async function _help({
+  args,
+  options,
+}: Invocation): Promise<void> {
   if (args.length === 0) {
     log(
       'usage: next [-g | --global] [-c |--config <path>] <subcommand> [<args>]\n'
@@ -44,7 +51,28 @@ export default function _help({args, options}: Invocation): void {
     if (options.help) {
       log(require(`.${path.sep}${args[0]}`).help);
     } else {
-      // TODO: show full docs: markdown help (colorized in terminal, or in browser with --html)
+      const markdown = formatMarkdown(
+        fs.readFileSync(
+          path.join(__dirname, '..', '..', 'docs', `${args[0]}.md`),
+          'utf8'
+        )
+      );
+
+      // TODO: show in browser if passed --html
+      if (process.env.PAGER) {
+        // Hackily write formatted output to temporary file; easier than setting
+        // up pipes in Node.
+        const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'next'));
+        const file = path.join(directory, `${args[0]}.md`);
+
+        fs.writeFileSync(file, markdown, 'utf8');
+
+        const pager = child_process.spawnSync(process.env.PAGER, [file], {
+          stdio: 'inherit',
+        });
+      } else {
+        log(markdown);
+      }
     }
   } else {
     throw new Error(

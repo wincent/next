@@ -107,6 +107,10 @@ export default class StringScanner {
     return [line, column];
   }
 
+  get remaining(): string {
+    return this.#remaining;
+  }
+
   peek(pattern: RegExp): boolean {
     return toAnchoredRegExp(pattern).test(this.#remaining);
   }
