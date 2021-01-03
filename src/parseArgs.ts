@@ -3,6 +3,10 @@
  * SPDX-License-Identifier: MIT
  */
 
+import {SUBCOMMANDS} from './subcommands';
+
+export type SubcommandsT = typeof SUBCOMMANDS[number];
+
 export type Invocation = {
   args: Array<string>;
   options: {
@@ -13,7 +17,7 @@ export type Invocation = {
     // verbose: boolean;
     [key: string]: string | boolean;
   };
-  subcommand: typeof SUBCOMMANDS[number] | null;
+  subcommand: SubcommandsT | null;
 };
 
 type Schema = {
@@ -22,8 +26,6 @@ type Schema = {
     type: 'boolean' | 'string';
   };
 };
-
-const SUBCOMMANDS = ['add', 'help', 'init'] as const;
 
 export default function parseArgs([
   _node,
@@ -116,5 +118,5 @@ function isSubcommand(
     return false;
   }
 
-  return SUBCOMMANDS.includes(candidate as 'add' | 'help' | 'init');
+  return SUBCOMMANDS.includes(candidate as SubcommandsT);
 }
