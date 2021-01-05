@@ -8,7 +8,7 @@ import path from 'path';
 
 import loadRC from './util/loadRC';
 
-type Config = {
+export type Config = {
   // Properties from INI.
   branch: string;
   repo: string;

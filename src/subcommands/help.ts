@@ -12,12 +12,12 @@ import formatMarkdown from '../util/formatMarkdown';
 import log from '../util/log';
 import {SUBCOMMANDS} from './index';
 
-import type {Invocation, SubcommandsT} from '../parseArgs';
+import type {Context} from '../main';
+import type {SubcommandsT} from '../parseArgs';
 
-export default async function _help({
-  args,
-  options,
-}: Invocation): Promise<void> {
+export default async function _help({invocation}: Context): Promise<void> {
+  const {args, options} = invocation;
+
   if (args.length === 0) {
     log(
       'usage: next [-g | --global] [-c |--config <path>] <subcommand> [<args>]\n'

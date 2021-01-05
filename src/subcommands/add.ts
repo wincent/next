@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-import type {Invocation} from '../parseArgs';
+import type {Context} from '../main';
 
-export default function add({args, options}: Invocation): void {
-  console.log('adding', args, options);
+export default function add({config, invocation}: Context): void {
+  console.log('adding', config, invocation);
 }
 
 export const description = 'Add a new task';

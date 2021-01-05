@@ -9,6 +9,14 @@ import log from './util/log';
 import prompt from './util/prompt';
 import {getWorktrees} from './util/worktree';
 
+import type {Config} from './getConfig';
+import type {Invocation} from './parseArgs';
+
+export type Context = {
+  config: Config;
+  invocation: Invocation;
+};
+
 export default async function main(): Promise<void> {
   const invocation = parseArgs(process.argv);
 
@@ -16,16 +24,21 @@ export default async function main(): Promise<void> {
   // TODO: respect rc.repo if present
   const config = getConfig(invocation.options.config || undefined);
 
+  const context = {config, invocation};
+
   if (invocation.options.help) {
     // TODO: show help and exit
     // if we have a subcommand, show subcommand-specific help
     // offer to show man page with `help subcommand`
     await (await import('./subcommands/help')).default({
-      args: invocation.subcommand
-        ? [invocation.subcommand, ...invocation.args]
-        : invocation.args,
-      options: invocation.options,
-      subcommand: 'help',
+      config,
+      invocation: {
+        args: invocation.subcommand
+          ? [invocation.subcommand, ...invocation.args]
+          : invocation.args,
+        options: invocation.options,
+        subcommand: 'help',
+      },
     });
 
     process.exit();
@@ -66,17 +79,17 @@ export default async function main(): Promise<void> {
 
   switch (invocation.subcommand) {
     case 'add': {
-      await (await import('./subcommands/add')).default(invocation);
+      await (await import('./subcommands/add')).default(context);
       break;
     }
 
     case 'help': {
-      await (await import('./subcommands/help')).default(invocation);
+      await (await import('./subcommands/help')).default(context);
       break;
     }
 
     case 'init': {
-      await (await import('./subcommands/init')).default(invocation);
+      await (await import('./subcommands/init')).default(context);
       break;
     }
 

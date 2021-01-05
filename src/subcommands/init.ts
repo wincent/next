@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-import type {Invocation} from '../parseArgs';
+import type {Context} from '../main';
 
-export default function init({args, options}: Invocation): void {
-  console.log('initing', args, options);
+export default function init({config, invocation}: Context): void {
+  console.log('initing', config, invocation);
 }
 
 export const description = 'Initialize a project by creating a .nextrc file';
