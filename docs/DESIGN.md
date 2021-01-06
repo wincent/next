@@ -146,6 +146,8 @@ What do we want to do for tasks that are in an area but not assigned to a specif
 - `next show ANYTHING`: show info for whatever is identified by `ANYTHING` (may be able to force item type with `task:ID` or `project:foo` or `@foo` etc)
 - `next sync`: Git push and pull to bring local copy into sync.
 - `next when ID [SCHEDULE]`: shows or modifies task scheduling information.
+- `next log`: marks completed tasks as "logged".
+- `next undo`: reverts the effect of the last operation.
 - `next ANYTHING`: anything not recognized by the above is a search
 
 # Options
