@@ -66,6 +66,11 @@ export default async function main(): Promise<void> {
         // NOTE: should only offer this if nothing already at config.worktree
         // and branch not already checked out at some other worktree
         if (prompt('Do you want me to create it? [y/n]')) {
+          // git symbolic-ref HEAD refs/heads/tasks
+          // rm .git/index
+          // git commit -m 'chore: initialize new branch' --allow-empty
+          // git checkout -f master
+          // git worktree add tasks tasks
           console.log('creating...');
         }
       } else {
