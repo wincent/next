@@ -53,7 +53,14 @@ export default async function _help({invocation}: Context): Promise<void> {
     } else {
       const markdown = formatMarkdown(
         fs.readFileSync(
-          path.join(__dirname, '..', '..', 'docs', `${args[0]}.md`),
+          path.join(
+            __dirname,
+            '..',
+            '..',
+            'docs',
+            'subcommands',
+            `${args[0]}.md`
+          ),
           'utf8'
         )
       );
