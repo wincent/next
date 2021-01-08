@@ -72,6 +72,7 @@ export default async function main(): Promise<void> {
           // git checkout -f master
           // git worktree add tasks tasks
           console.log('creating...');
+          // note may just call `init` for this
         }
       } else {
         // great... it exists, we can proceed...
@@ -95,6 +96,11 @@ export default async function main(): Promise<void> {
 
     case 'init': {
       await (await import('./subcommands/init')).default(context);
+      break;
+    }
+
+    case 'rebuild': {
+      await (await import('./subcommands/rebuild')).default(context);
       break;
     }
 

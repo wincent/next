@@ -3,4 +3,4 @@
  * SPDX-License-Identifier: MIT
  */
 
-export const SUBCOMMANDS = ['add', 'help', 'init'] as const;
+export const SUBCOMMANDS = ['add', 'help', 'init', 'rebuild'] as const;

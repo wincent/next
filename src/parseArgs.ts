@@ -90,6 +90,8 @@ export default function parseArgs([
           schema = require('./subcommands/help').options;
         } else if (subcommand === 'init') {
           schema = require('./subcommands/init').options;
+        } else if (subcommand === 'rebuild') {
+          schema = require('./subcommands/rebuild').options;
         }
       } else {
         throw new Error(`unrecognized subcommand: ${arg}`);
