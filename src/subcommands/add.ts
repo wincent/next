@@ -34,3 +34,9 @@ export const options = {
     type: 'boolean',
   },
 };
+
+// TODO: consider doing something like this; not sure if want a
+// preprocessing/transform step or just something that may throw/log if passed
+// garbage.
+// export function validate(args: Array<string>): void {
+// }

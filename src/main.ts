@@ -6,7 +6,7 @@
 import getConfig from './getConfig';
 import parseArgs from './parseArgs';
 import log from './util/log';
-import prompt from './util/prompt';
+import {confirm} from './util/readline';
 import {getWorktrees} from './util/worktree';
 
 import type {Config} from './getConfig';
@@ -65,7 +65,7 @@ export default async function main(): Promise<void> {
         );
         // NOTE: should only offer this if nothing already at config.worktree
         // and branch not already checked out at some other worktree
-        if (prompt('Do you want me to create it? [y/n]')) {
+        if (await confirm('Do you want me to create it?')) {
           // git symbolic-ref HEAD refs/heads/tasks
           // rm .git/index
           // git commit -m 'chore: initialize new branch' --allow-empty

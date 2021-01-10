@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+import assert from 'assert';
 import os from 'os';
 import path from 'path';
 
@@ -52,6 +53,8 @@ export default function getConfig(location?: string): Config {
   } else {
     config.dataDirectory = config.repo;
   }
+
+  assert(config.dataDirectory !== PLACEHOLDER);
 
   return config;
 }
