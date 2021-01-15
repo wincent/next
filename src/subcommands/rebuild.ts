@@ -104,7 +104,10 @@ function normalizeTask(metadata: INI, store: Store) {
 }
 
 function expectDate(dateString: unknown) {
-  if (typeof dateString === 'string' && new Date(dateString).toJSON !== null) {
+  if (
+    typeof dateString === 'string' &&
+    new Date(dateString).toJSON() !== null
+  ) {
     return;
   }
 

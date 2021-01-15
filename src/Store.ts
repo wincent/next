@@ -9,9 +9,11 @@ import path from 'path';
 import UUID from './util/UUID';
 import getStringMapFromINI from './util/getStringMapFromINI';
 import parseFrontmatter from './util/parseFrontmatter';
+import parseINI from './util/parseINI';
 
 import type {Config} from './getConfig';
 import type {INI} from './util/parseINI';
+import type {StringMap} from './util/getStringMapFromINI';
 
 // TODO: all entities should have UUIDs so that if we rename them we can resolve
 // conflicts
@@ -32,10 +34,10 @@ import type {INI} from './util/parseINI';
 // note we don't need explicit children relation (implied by FS)
 // moving a project from one list to another will update parent link
 type AreaMetadata = {
-  name: string;
   createdAt: string;
   deletedAt: string | null;
   modifiedAt: string | null;
+  name: string;
   type: 'area';
   uuid: string;
 };
@@ -55,11 +57,11 @@ type TaskMetadata = {
 };
 
 type ProjectMetadata = {
-  name: string;
+  area: string | null;
   createdAt: string;
   deletedAt: string | null;
   modifiedAt: string | null;
-  area: string | null;
+  name: string;
   type: 'project';
   uuid: string;
 };
@@ -79,7 +81,7 @@ export default class Store {
     checkFilename(name);
 
     if (this.areas.includes(name)) {
-      // Read exesting area metadata and return it.
+      // Read existing area metadata and return it.
 
       // TODO: nope, make this a no-op; just return the existing area
       throw new Error(
@@ -153,11 +155,9 @@ export default class Store {
       project = 'Inbox';
     } else {
       if (area) {
-        // create if doesn't exist
-        // create project if it doesn't exist
-      } else {
-        // create project if it doesn't exist
+        this.addArea(area);
       }
+      this.addProject(project);
     }
 
     const metadata: TaskMetadata = {
@@ -191,6 +191,8 @@ export default class Store {
     return metadata;
   }
 
+  // TODO: match projects and areas case insensitively, so that I can write
+  // "Do TPS reports @work/next" and have it assigned to "@Work/Next".
   getProject(name: string): ProjectMetadata {
     // TODO: this will throw if project doesn't exist; might want to turn this
     // into a better error message than just letting ENOENT bubble up
@@ -201,17 +203,39 @@ export default class Store {
       metadata: {uuid},
     } = parseFrontmatter(contents, filename);
 
-    // TODO read metadata file and return it
-    return {} as ProjectMetadata;
+    const map = getStringMapFromINI(
+      parseINI(fs.readFileSync(this.metadataFile('project', uuid), 'utf8'))
+    );
+
+    try {
+      assertMatch(map, 'name', name, filename);
+      assertMatch(map, 'type', 'project', filename);
+      assertMatch(map, 'uuid', uuid, filename);
+
+      return {
+        area: null, // TODO: implement proper extraction
+        createdAt: assertDate(map.createdAt),
+        deletedAt: assertDateOrNull(map.deletedAt),
+        modifiedAt: assertDateOrNull(map.modifiedAt),
+        name,
+        type: 'project',
+        uuid,
+      };
+    } catch (error) {
+      throw new Error(
+        `In ${filename}: ${error}\n\n` +
+          'Some problems may be fixable with `next rebuild`'
+      );
+    }
   }
 
-  metadataFile(metadata: Metadata): string {
+  metadataFile(type: 'area' | 'project' | 'task', uuid: string): string {
     return path.join(
       this.#config.dataDirectory,
       '.metadata',
-      metadata.type,
-      metadata.uuid.slice(0, 2),
-      `${metadata.uuid.slice(2)}.ini`
+      type,
+      uuid.slice(0, 2),
+      `${uuid.slice(2)}.ini`
     );
   }
 
@@ -248,7 +272,7 @@ export default class Store {
   // }
 
   _writeMetadata(metadata: Metadata) {
-    const file = this.metadataFile(metadata);
+    const file = this.metadataFile(metadata.type, metadata.uuid);
     const directory = path.dirname(file);
     fs.mkdirSync(directory, {recursive: true});
     fs.writeFileSync(file, metadataToINI(metadata), 'utf8');
@@ -274,16 +298,21 @@ export function checkFilename(name: string) {
 }
 
 export function parseTaskDescription(description: string) {
-  let area: string | null = null;
-  let project: string | null = null;
+  let area: string | null = null as string | null;
+  let project: string | null = null as string | null;
 
   const text = description
-    .replace(/@[\S]+\s*/g, (match) => {
-      const parts = match.split('/');
+    .replace(/(?<!\S)@([\S]+)\s*/g, (match, name) => {
+      const parts = name.split('/');
 
       if (parts.length === 2) {
-        area = parts[0];
-        project = parts[1];
+        if (name.endsWith('/')) {
+          area = parts[0];
+          project = null;
+        } else {
+          area = parts[0];
+          project = parts[1];
+        }
       } else if (parts.length === 1) {
         area = null;
         project = parts[0];
@@ -297,10 +326,48 @@ export function parseTaskDescription(description: string) {
 
   return {
     area,
-    project: project as any, // TS insists it's null here
+    project,
     raw: description,
     text,
   };
+}
+
+// TODO: refactor rebuild subcommand to re-use this validation functionality in
+// the store (will probably also require this to be refactored).
+
+function assertDate(value: unknown): string {
+  if (typeof value !== 'string') {
+    throw new Error(`Expected string but got ${typeof value}`);
+  }
+
+  if (new Date(value).toJSON() === null) {
+    throw new Error(`Expected date string but got ${JSON.stringify(value)}`);
+  }
+
+  return value;
+}
+
+function assertDateOrNull(value: unknown): string | null {
+  if (value === null) {
+    return value;
+  } else {
+    return assertDate(value);
+  }
+}
+
+function assertMatch(
+  map: StringMap,
+  key: string,
+  value: string,
+  filename: string
+) {
+  if (map[key] !== value) {
+    throw new Error(
+      `Metadata mismatch in ${filename} for "name": ${JSON.stringify(
+        map[key]
+      )} !== ${JSON.stringify(value)}`
+    );
+  }
 }
 
 export function metadataToINI(metadata: Metadata): string {
@@ -308,14 +375,3 @@ export function metadataToINI(metadata: Metadata): string {
     return output + `${key} = ${value}\n`;
   }, '');
 }
-
-/*
-export function INIToMetadata(ini: INI): Metadata {
-  const map = getStringMapFromINI(ini);
-
-  if (typeof map.createdAt === 'string') {
-  }
-
-  return {};
-}
-*/
