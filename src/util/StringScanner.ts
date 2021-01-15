@@ -3,6 +3,16 @@
  * SPDX-License-Identifier: MIT
  */
 
+export function formatContext(scanner: StringScanner) {
+  const [line, column] = scanner.location;
+
+  return (
+    `line ${line}, column ${column} of ${scanner.description}\n\n` +
+    scanner.context(line, column) +
+    '\n'
+  );
+}
+
 export function toAnchoredRegExp(regExp: RegExp): RegExp {
   const {source} = regExp;
 
@@ -22,38 +32,6 @@ export default class StringScanner {
     this.#haystack = haystack;
     this.#index = 0;
     this.#remaining = haystack;
-  }
-
-  /**
-   * Shows context at the current position in the haystack.
-   *
-   * Like the `location` getter, this is only intended to be used in error
-   * reporting pathways, so it is not made to be fast.
-   */
-  context(line: number, column: number): string {
-    if (this.#haystack === '') {
-      return '';
-    }
-
-    const lines = this.#haystack.split(/(?:\r?\n)/g);
-    const start = Math.max(1, line - 2);
-    const end = Math.min(lines.length, line + 3);
-    const gutter = end.toString().length + 1;
-
-    let output = '';
-
-    for (let i = start; i <= end; i++) {
-      output += i === line ? '>' : ' ';
-      output += i.toString().padStart(gutter);
-      output += ` | ${lines[i - 1]}\n`;
-
-      if (i === line) {
-        output += '|'.padStart(gutter + 3);
-        output += ' '.repeat(column) + '^\n';
-      }
-    }
-
-    return output;
   }
 
   get atEnd(): boolean {
@@ -109,6 +87,50 @@ export default class StringScanner {
 
   get remaining(): string {
     return this.#remaining;
+  }
+
+  /**
+   * Shows context at the current position in the haystack.
+   *
+   * Like the `location` getter, this is only intended to be used in error
+   * reporting pathways, so it is not made to be fast.
+   */
+  context(line: number, column: number): string {
+    if (this.#haystack === '') {
+      return '';
+    }
+
+    const lines = this.#haystack.split(/(?:\r?\n)/g);
+    const start = Math.max(1, line - 2);
+    const end = Math.min(lines.length, line + 3);
+    const gutter = end.toString().length + 1;
+
+    let output = '';
+
+    for (let i = start; i <= end; i++) {
+      output += i === line ? '>' : ' ';
+      output += i.toString().padStart(gutter);
+      output += ` | ${lines[i - 1]}\n`;
+
+      if (i === line) {
+        output += '|'.padStart(gutter + 3);
+        output += ' '.repeat(column) + '^\n';
+      }
+    }
+
+    return output;
+  }
+
+  expect(pattern: RegExp, description?: string): string {
+    const result = this.scan(pattern);
+
+    if (result === null) {
+      throw new Error(
+        `Expected ${description ?? pattern} at ${formatContext(this)}`
+      );
+    }
+
+    return result;
   }
 
   peek(pattern: RegExp): boolean {

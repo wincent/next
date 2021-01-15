@@ -27,30 +27,30 @@ export function getWorktrees(): Array<Worktree> {
     let branch = undefined;
     let detached = false;
 
-    scan(/worktree /, scanner);
+    scanner.expect(/worktree /);
 
-    const path = scan(/[^\n]+\n/, scanner).trim();
+    const path = scanner.expect(/[^\n]+\n/).trim();
 
     while (!scanner.atEnd) {
-      if (optional(/bare\n/, scanner)) {
+      if (scanner.scan(/bare\n/)) {
         bare = true;
       }
 
-      if (optional(/detached\n/, scanner)) {
+      if (scanner.scan(/detached\n/)) {
         detached = true;
       }
 
-      const label = optional(/[^ ]+ /, scanner)?.trim();
+      const label = scanner.scan(/[^ ]+ /)?.trim();
 
       if (label) {
-        const value = scan(/[^\n]+\n/, scanner).trim();
+        const value = scanner.expect(/[^\n]+\n/).trim();
 
         if (label === 'branch') {
           branch = value;
         }
       }
 
-      if (optional(/\n/, scanner)) {
+      if (scanner.scan(/\n/)) {
         break;
       }
     }
@@ -64,23 +64,4 @@ export function getWorktrees(): Array<Worktree> {
   }
 
   return worktrees;
-}
-
-function optional(pattern: RegExp, scanner: StringScanner): string | null {
-  return scanner.scan(pattern);
-}
-
-function scan(pattern: RegExp, scanner: StringScanner): string {
-  const result = scanner.scan(pattern);
-
-  if (!result) {
-    const [line, column] = scanner.location;
-
-    throw new Error(
-      `Expected ${pattern} at line ${line}, column ${column} of ${scanner.description}:\n\n` +
-        scanner.context(line, column)
-    );
-  }
-
-  return result;
 }

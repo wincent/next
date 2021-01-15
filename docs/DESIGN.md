@@ -23,6 +23,7 @@
 - No JSON in user-editable task data (resolving merge conflicts in JSON is relatively painful; also, want everything to be readable on a phone).
 - Migrate completed and deleted tasks into separate files to keep working set of pending tasks small and fast.
 - Use some ephemeral data (not committed to repo) to enhance operation; this can be safely deleted (example: recency information used to rank items when selecting from lists; this one can be stored in a JSON file).
+- Zsh autocompletion (eg. `next add @` should autocomplete areas/project names; will need a subcommand for this).
 
 # Example
 
@@ -126,13 +127,13 @@ Note there is some ambiguity that needs to be defined away when it comes to what
 
 The other consideration here is what to do with other metadata once a task is added. For example, should we add an `id:identifier` metadata pair? Should IDs be human-readable (monotonically increasing integers may lead to merge conflicts) or randomish (UUIDs)? What should instances of recurring task templates look like? (ie. should that have an `instance-of:id` metadata there?) Do we want to add additional metadata like `created:time`? Do we want to preserve original natural language specifiers like `something:"next wednesday"` while simultaneously storing a resolved version of the same, like `something-resolved:2021-01-06`?
 
-What do we want to do for tasks that are in an area but not assigned to a specific project? If areas correspond to folders, maybe by convention we need an "index" or "catch-all" file that holds such tasks. That would also be a good place for Area-specific metadata (like description, or due date, if I ever decide to add such a thing).
+What do we want to do for tasks that are in an area but not assigned to a specific project? If areas correspond to folders, maybe by convention we need an "index" or "catch-all" file that holds such tasks (could also just permit project of same name to serve this purpose; ie. Area "work" with folder `Work/` and top-level tasks `Work.tasks`, although we'd need to figure out how to avoid confusion about metadata, because `Work.tasks` really is an area's catch-all project and not a standalone project in itself). That would also be a good place for Area-specific metadata (like description, or due date, if I ever decide to add such a thing).
 
-# Commands
+# Subcommands
 
 - `next`: show default "next" view
 - `next help`: show help (Markdown; might want to render this in color for the terminal)
-  - `next commands`: show all commands (summary)
+  - `next commands`: show all subcommands (summary)
   - `next help COMMAND`: show help for specific command (`--help` should also do that)
 - `next add SPEC`: adds a task
   - `next add -v [SPEC]`: adds a task in visual mode, which uses `$EDITOR` (see the `next edit` command).
@@ -141,7 +142,7 @@ What do we want to do for tasks that are in an area but not assigned to a specif
 - `next move ID @AREA/PROJECT`: moves a project
 - `next config`: read and write config values
 - `next init`: creates a `.nextrc` file for a project
-- `next ls|list PATTERN`: search/list tasks
+- `next ls|list PATTERN`: search/list tasks or projects
 - `next repl`: interactive command-line mode
 - `next show ANYTHING`: show info for whatever is identified by `ANYTHING` (may be able to force item type with `task:ID` or `project:foo` or `@foo` etc)
 - `next sync`: Git push and pull to bring local copy into sync.

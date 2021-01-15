@@ -27,7 +27,7 @@ export function choose(
     .then((result) => {
       const choice = Math.floor(Number(result)) - 1;
       if (choice >= 0 && choice < choices.length) {
-        return choices[Math.floor(Number(result))];
+        return choices[choice];
       } else {
         log.warn(`Invalid choice: ${result}`);
         return choose(question, choices, defaultChoice);
@@ -53,10 +53,7 @@ export function confirm(question: string): Promise<boolean> {
     });
 }
 
-export function prompt(
-  question: string,
-  defaultAnswer: string = ''
-): Promise<string> {
+export function prompt(question: string, defaultAnswer = ''): Promise<string> {
   const readline = getInterface();
 
   return new Promise((resolve) => {

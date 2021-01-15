@@ -17,7 +17,8 @@
     "format:check": "prettier --list-different \"**/*.{js,json,md,ts,yml}\" \"bin/*\"",
     "lint": "eslint \"**/*.{js,ts}\" \"bin/*\"",
     "lint:fix": "eslint --fix \"**/*.{js,ts}\" \"bin/*\"",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "7.12.1",

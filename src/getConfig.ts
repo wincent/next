@@ -12,6 +12,7 @@ import loadRC from './util/loadRC';
 export type Config = {
   // Properties from INI.
   branch: string;
+  remote: string;
   repo: string;
   worktree: string | null;
 } & {
@@ -29,6 +30,7 @@ export default function getConfig(location?: string): Config {
     branch: rc.branch || 'master',
     dataDirectory: PLACEHOLDER,
     location: rc[loadRC.LOCATION],
+    remote: rc.remote || 'origin',
     repo: PLACEHOLDER,
     worktree: rc.worktree || null,
   };

@@ -14,6 +14,10 @@ const YELLOW = isTTY ? '\x1b[33m' : '';
 /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
 type Loggable = any;
 
+export function bold(text: string): string {
+  return `${BOLD}${text}${RESET}`;
+}
+
 export default function log(...messages: Array<Loggable>): void {
   console.log(...messages);
 }

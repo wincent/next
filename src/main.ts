@@ -99,6 +99,11 @@ export default async function main(): Promise<void> {
       break;
     }
 
+    case 'ls': {
+      await (await import('./subcommands/ls')).default(context);
+      break;
+    }
+
     case 'rebuild': {
       await (await import('./subcommands/rebuild')).default(context);
       break;

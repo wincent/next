@@ -23,16 +23,6 @@ export type INI = {
   };
 };
 
-function formatError(scanner: StringScanner) {
-  const [line, column] = scanner.location;
-
-  return (
-    `line ${line}, column ${column} of ${scanner.description}\n\n` +
-    scanner.context(line, column) +
-    '\n'
-  );
-}
-
 /**
  * Crude INI format parser.
  *
@@ -66,17 +56,9 @@ export default function parseINI(input: string, file?: string): INI {
     const key = scanner.scan(KEY_REGEXP)?.trim();
 
     if (key) {
-      if (!scanner.scan(ASSIGNMENT_REGEXP)) {
-        throw new Error(
-          `Expected value assignment (=) at ${formatError(scanner)}`
-        );
-      }
+      scanner.expect(ASSIGNMENT_REGEXP, 'value assignment (=)');
 
-      const value = scanner.scan(VALUE_REGEXP)?.trim();
-
-      if (!value) {
-        throw new Error(`Expected value at ${formatError(scanner)}`);
-      }
+      const value = scanner.expect(VALUE_REGEXP, 'value')?.trim();
 
       current[key] = value;
     }

@@ -14,6 +14,11 @@ export default function add({config, invocation}: Context): void {
 
   const store = new Store(config);
 
+  // TODO: `next add @Work/Next` should add area/project?
+  // `next add @Work/` just to create the area
+  // either that or `next create ...`
+  // `next add-area`
+  // `next add-project`
   const added = store.addTask(invocation.args.join(' '));
 
   log(`Added: ${added.uuid}`);

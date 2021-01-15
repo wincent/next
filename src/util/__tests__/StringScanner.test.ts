@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import StringScanner, {toAnchoredRegExp} from '../StringScanner';
+import StringScanner, {formatContext, toAnchoredRegExp} from '../StringScanner';
 
 describe('StringScanner', () => {
   describe('context()', () => {
@@ -67,6 +67,36 @@ describe('StringScanner', () => {
           '  5 | fifth line\n' +
           '  6 | sixth line\n' +
           '  7 | seventh line\n'
+      );
+    });
+  });
+
+  describe('expect()', () => {
+    let scanner: StringScanner;
+
+    beforeEach(() => {
+      scanner = new StringScanner('some stuff in here');
+    });
+
+    it('returns a match', () => {
+      expect(scanner.expect(/some/)).toBe('some');
+    });
+
+    it('throws when matching fails', () => {
+      expect(() => scanner.expect(/nope/)).toThrow(
+        'Expected /nope/ at line 1, column 1 of input string\n' +
+          '\n' +
+          '> 1 | some stuff in here\n' +
+          '    | ^\n'
+      );
+    });
+
+    it('includes a description in the failure message when provided', () => {
+      expect(() => scanner.expect(/nope/, 'keyword')).toThrow(
+        'Expected keyword at line 1, column 1 of input string\n' +
+          '\n' +
+          '> 1 | some stuff in here\n' +
+          '    | ^\n'
       );
     });
   });
@@ -212,6 +242,22 @@ describe('StringScanner', () => {
         expect(scanner.location).toEqual([2, 6]);
       });
     });
+  });
+});
+
+describe('formatContext()', () => {
+  it('includes line, column, description, and context', () => {
+    const scanner = new StringScanner('my input string', 'file.txt');
+
+    scanner.scan(/my /);
+
+    expect(formatContext(scanner)).toBe(
+      'line 1, column 4 of file.txt\n' +
+        '\n' +
+        '> 1 | my input string\n' +
+        '    |    ^\n' +
+        '\n'
+    );
   });
 });
 
