@@ -153,12 +153,13 @@ export default class Store {
 
     if (!project) {
       project = 'Inbox';
-    } else {
-      if (area) {
-        this.addArea(area);
-      }
-      this.addProject(project);
     }
+
+    if (area) {
+      this.addArea(area);
+    }
+
+    this.addProject(project);
 
     const metadata: TaskMetadata = {
       createdAt: now,
