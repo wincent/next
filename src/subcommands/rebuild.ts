@@ -79,9 +79,13 @@ export default function rebuild({config, invocation}: Context): void {
   log.info(`Valid: ${validCount}`);
 }
 
-function normalizeArea(metadata: INI, store: Store) {}
+function normalizeArea(metadata: INI, store: Store) {
+  return;
+}
 
-function normalizeProject(metadata: INI, store: Store) {}
+function normalizeProject(metadata: INI, store: Store) {
+  return;
+}
 
 function normalizeTask(metadata: INI, store: Store) {
   expectDate(metadata.createdAt);

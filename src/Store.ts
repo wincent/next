@@ -162,7 +162,7 @@ export default class Store {
 
     const metadata: TaskMetadata = {
       createdAt: now,
-      completedAt: now,
+      completedAt: null,
       deletedAt: null,
       loggedAt: null,
       modifiedAt: now,
@@ -175,6 +175,8 @@ export default class Store {
     // TODO: sanitize/format description (eg. could be multiline)
 
     const task = `o ${description} uuid:${metadata.uuid}\n`;
+
+    // TODO: if project doesn't exist yet, we fail to create proper metadata
 
     fs.writeFileSync(
       path.join(this.#config.dataDirectory, `${project}.tasks`),
