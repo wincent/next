@@ -66,7 +66,7 @@ type ProjectMetadata = {
   uuid: string;
 };
 
-const TASKS_EXTENSION = '.tasks'
+const TASKS_EXTENSION = '.tasks';
 
 export default class Store {
   #areas: Array<string> | null;
@@ -260,11 +260,12 @@ export default class Store {
       for (const directory of ['', ...this.areas]) {
         const search = path.join(this.#config.dataDirectory, directory);
         for (const entry of fs.readdirSync(search, {withFileTypes: true})) {
-          if (!entry.isDirectory() && path.extname(entry.name) === TASKS_EXTENSION) {
+          if (
+            !entry.isDirectory() &&
+            path.extname(entry.name) === TASKS_EXTENSION
+          ) {
             const name = entry.name.slice(0, -TASKS_EXTENSION.length);
-            this.#projects.push(
-              [directory, name].filter(Boolean).join('/')
-            );
+            this.#projects.push([directory, name].filter(Boolean).join('/'));
           }
         }
       }
