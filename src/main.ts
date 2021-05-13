@@ -30,7 +30,9 @@ export default async function main(): Promise<void> {
     // TODO: show help and exit
     // if we have a subcommand, show subcommand-specific help
     // offer to show man page with `help subcommand`
-    await (await import('./subcommands/help')).default({
+    await (
+      await import('./subcommands/help')
+    ).default({
       config,
       invocation: {
         args: invocation.subcommand
