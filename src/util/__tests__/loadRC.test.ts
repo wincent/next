@@ -181,7 +181,7 @@ function withHome(override: string | undefined, callback: () => void) {
 function withScratchDirectory(callback: (scratch: string) => void) {
   const cwd = process.cwd();
 
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'next'));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'next-'));
 
   try {
     process.chdir(directory);
