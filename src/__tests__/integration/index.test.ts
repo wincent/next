@@ -7,6 +7,7 @@ import {promises as fs} from 'fs';
 import os from 'os';
 import path from 'path';
 
+import parseShell from '../../util/parseShell';
 import {default as mockMulberry32} from '../../util/mulberry32';
 
 /* eslint-disable @typescript-eslint/no-namespace */
@@ -30,7 +31,11 @@ expect.extend({
       const main = require('../../main').default;
 
       const next = async (...args: Array<string>) => {
-        process.argv = [argv[0], path.resolve('../../main'), ...args];
+        process.argv = [
+          argv[0],
+          path.resolve(__dirname, '../../main'),
+          ...args,
+        ];
 
         await main();
       };
@@ -63,10 +68,28 @@ expect.extend({
 
       process.chdir(tmpdir);
 
-      // TODO: read commands from suite (eval?)
-      // TODO: run them, verifying expected result at each step
+      if (process.env.DEBUG) {
+        console.log(`${suiteName} temporary directory: ${tmpdir}`);
+      }
 
-      await next('add', 'here', 'is', 'my', 'sample', 'task');
+      const commands = (
+        await fs.readFile(path.join(__dirname, suiteName), 'utf8')
+      )
+        .split(/\n/)
+        .map((line) => line.trim())
+        .filter((line) => line && !line.startsWith('#'));
+
+      for (const command of commands) {
+        const [executable, ...args] = parseShell(command);
+
+        if (executable === 'next') {
+          await next(...args);
+        } else if (executable) {
+          // TODO: allow running arbitrary shell commands
+        }
+      }
+
+      // TODO: actually compare results on filesystem
     } finally {
       process.argv = argv;
       process.chdir(cwd);
