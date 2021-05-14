@@ -161,7 +161,7 @@ export default class Store {
       this.addArea(area);
     }
 
-    this.addProject(project);
+    const {uuid} = this.addProject(project);
 
     const metadata: TaskMetadata = {
       createdAt: now,
@@ -169,7 +169,7 @@ export default class Store {
       deletedAt: null,
       loggedAt: null,
       modifiedAt: now,
-      project: 'invalid temporary UUID', // TODO: stick actual parent UUID in here
+      project: uuid,
       state: 'pending',
       type: 'task',
       uuid: UUID(),
