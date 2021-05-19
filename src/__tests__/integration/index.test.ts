@@ -304,10 +304,6 @@ function tick(descriptor: Array<string>) {
 
     const units = scanner.scan(/[dhms]/);
 
-    if (!units) {
-      throw new Error('tick(): expected d/h/m/s units');
-    }
-
     if (units === 'd') {
       return sign * 86400 * 1000 * interval;
     } else if (units === 'h') {
@@ -317,7 +313,7 @@ function tick(descriptor: Array<string>) {
     } else if (units === 's') {
       return sign * 1000 * interval;
     } else {
-      throw new Error('tick(): unexpected units');
+      throw new Error('tick(): expected d/h/m/s units');
     }
   };
 
