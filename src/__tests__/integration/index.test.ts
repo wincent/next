@@ -8,6 +8,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import StringScanner from '../../util/StringScanner';
 import log from '../../util/log';
 import parseShell from '../../util/parseShell';
 import {default as mockMulberry32} from '../../util/mulberry32';
@@ -105,6 +106,8 @@ expect.extend({
 
         if (executable === 'next') {
           await next(...args);
+        } else if (executable === 'tick') {
+          tick(args);
         } else if (executable) {
           child_process.execFileSync('bash', ['-c', command]);
         }
@@ -279,4 +282,52 @@ async function sync(sourceDirectory: string, destinationDirectory: string) {
   }
 
   await deleteExtraneous(destinationDirectory);
+}
+
+function tick(descriptor: Array<string>) {
+  const scanner = new StringScanner(descriptor.join(' '));
+
+  const parseTime = () => {
+    const sign = scanner.scan(/\+\s*/) ? 1 : scanner.scan(/-\s*/) ? -1 : 0;
+
+    if (!sign) {
+      throw new Error('tick(): expected a +/- sign');
+    }
+
+    const interval = parseInt(scanner.scan(/\d+/) || '', 10);
+
+    if (isNaN(interval)) {
+      throw new Error('tick(): expected an interval');
+    }
+
+    scanner.scan(/\s+/);
+
+    const units = scanner.scan(/[dhms]/);
+
+    if (!units) {
+      throw new Error('tick(): expected d/h/m/s units');
+    }
+
+    if (units === 'd') {
+      return sign * 86400 * 1000 * interval;
+    } else if (units === 'h') {
+      return sign * 3600 * 1000 * interval;
+    } else if (units === 'm') {
+      return sign * 60 * 1000 * interval;
+    } else if (units === 's') {
+      return sign * 1000 * interval;
+    } else {
+      throw new Error('tick(): unexpected units');
+    }
+  };
+
+  let delta = 0;
+
+  while (!scanner.atEnd) {
+    scanner.scan(/\s+/);
+
+    delta += parseTime();
+  }
+
+  jest.advanceTimersByTime(delta);
 }

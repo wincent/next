@@ -8,8 +8,10 @@
 next add Buy milk
 
 # We can fake the passage of time.
-# TODO: actually implement
-# tick +1h
+tick +1h
+
+# Note the date stamp on this task is one hour later.
+next add Buy eggs
 
 # We can run arbitrary commands.
 touch 'Proof that it'\''s easy to run '"arbitrary commands"
