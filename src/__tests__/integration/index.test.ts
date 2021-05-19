@@ -199,6 +199,37 @@ describe('integration tests', () => {
 });
 
 /**
+ * Returns true if the passed filesystem entry is "exotic" (ie. a symlink, or a
+ * socket, or a pipe, or a device etc).
+ */
+async function isExotic(entry: string) {
+  if (fs.existsSync(entry)) {
+    const stats = await fs.promises.stat(entry);
+
+    if (stats.isFile() || stats.isDirectory()) {
+      return stats.isSymbolicLink();
+    }
+    return true;
+  }
+  return false;
+}
+
+async function rm(item: string) {
+  const stats = await fs.promises.stat(item);
+
+  if (stats.isDirectory()) {
+    for (const entry of await fs.promises.readdir(item, {
+      withFileTypes: true,
+    })) {
+      await rm(path.join(item, entry.name));
+    }
+    await fs.promises.rmdir(item);
+  } else {
+    await fs.promises.unlink(item);
+  }
+}
+
+/**
  * Updates `destinationDirectory` to match `sourceDirectory`. Files and
  * directories present in `sourceDirectory` but missing from
  * `destinationDirectory` are added. Files and directories present in
@@ -248,35 +279,4 @@ async function sync(sourceDirectory: string, destinationDirectory: string) {
   }
 
   await deleteExtraneous(destinationDirectory);
-}
-
-/**
- * Returns true if the passed filesystem entry is "exotic" (ie. a symlink, or a
- * socket, or a pipe, or a device etc).
- */
-async function isExotic(entry: string) {
-  if (fs.existsSync(entry)) {
-    const stats = await fs.promises.stat(entry);
-
-    if (stats.isFile() || stats.isDirectory()) {
-      return stats.isSymbolicLink();
-    }
-    return true;
-  }
-  return false;
-}
-
-async function rm(item: string) {
-  const stats = await fs.promises.stat(item);
-
-  if (stats.isDirectory()) {
-    for (const entry of await fs.promises.readdir(item, {
-      withFileTypes: true,
-    })) {
-      await rm(path.join(item, entry.name));
-    }
-    await fs.promises.rmdir(item);
-  } else {
-    await fs.promises.unlink(item);
-  }
 }
