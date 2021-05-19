@@ -17,7 +17,7 @@ import {default as mockMulberry32} from '../../util/mulberry32';
 declare global {
   namespace jest {
     interface Matchers<R> {
-      toPassIntegrationTest(): CustomMatcherResult;
+      toPassIntegrationTest(): Promise<CustomMatcherResult>;
     }
   }
 }
