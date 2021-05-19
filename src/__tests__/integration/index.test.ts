@@ -24,6 +24,16 @@ declare global {
 
 const SCRIPT_NAME = 'script.sh';
 
+describe('integration tests', () => {
+  it('passes the "smoke" test (ie. does this thing even work?)', async () => {
+    await expect('0000-smoke-test').toPassIntegrationTest();
+  });
+
+  it('runs basic "task add" commands', async () => {
+    await expect('1000-basic-task-add').toPassIntegrationTest();
+  });
+});
+
 expect.extend({
   async toPassIntegrationTest(suiteName) {
     const argv = process.argv;
@@ -186,16 +196,6 @@ expect.extend({
       message: () => (results.length ? results.join('\n') : ''),
     };
   },
-});
-
-describe('integration tests', () => {
-  it('passes the "smoke" test (ie. does this thing even work?)', async () => {
-    await expect('0000-smoke-test').toPassIntegrationTest();
-  });
-
-  it('runs basic "task add" commands', async () => {
-    await expect('1000-basic-task-add').toPassIntegrationTest();
-  });
 });
 
 /**
