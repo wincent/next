@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-export function formatContext(scanner: StringScanner) {
+export function formatContext(scanner: StringScanner): string {
   const [line, column] = scanner.location;
 
   return (

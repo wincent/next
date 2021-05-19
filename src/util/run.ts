@@ -9,7 +9,7 @@ export default function run(
   executable: string,
   ...args: Array<string>
 ): string {
-  const {error, signal, status, stderr, stdout} = child_process.spawnSync(
+  const {error, signal, status, stdout} = child_process.spawnSync(
     executable,
     args
   );

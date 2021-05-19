@@ -12,8 +12,8 @@ import type {Context} from '../main';
 export default function ls({config, invocation}: Context): void {
   const store = new Store(config);
 
-  console.log(store.areas);
-  console.log(store.projects);
+  // console.log(store.areas);
+  // console.log(store.projects);
 
   log(`Added: ${'hi'}`);
 }

@@ -73,7 +73,7 @@ export default async function main(): Promise<void> {
           // git commit -m 'chore: initialize new branch' --allow-empty
           // git checkout -f master
           // git worktree add tasks tasks
-          console.log('creating...');
+          // console.log('creating...');
           // note may just call `init` for this
         }
       } else {

@@ -172,6 +172,10 @@ What do we want to do for tasks that are in an area but not assigned to a specif
 - [Taskwarrior]: JSON-based command-line task management.
 - [todo.txt]: Bash-powered command-line tool with simple plain-text file format.
 
+# TODOs
+
+- Add some safeguards for when I run development commands in the worktree by mistake (eg. adding a task in a worktree checkout; although that should actually work just fine).
+
 [ini]: https://en.wikipedia.org/wiki/INI_file
 [toml]: https://github.com/toml-lang/toml
 [ncurses]: https://invisible-island.net/ncurses/

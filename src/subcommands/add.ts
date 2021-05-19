@@ -10,7 +10,7 @@ import log from '../util/log';
 import type {Context} from '../main';
 
 export default function add({config, invocation}: Context): void {
-  console.log('adding', config, invocation);
+  // console.log('adding', config, invocation);
 
   const store = new Store(config);
 

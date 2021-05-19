@@ -11,7 +11,7 @@
  * @see https://gist.github.com/tommyettinger/46a874533244883189143505d203312c
  * @see http://gjrand.sourceforge.net/
  */
-export default function mulberry32(a: number) {
+export default function mulberry32(a: number): () => number {
   return function () {
     let t = (a += 0x6d2b79f5);
     t = Math.imul(t ^ (t >>> 15), t | 1);

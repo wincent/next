@@ -6,6 +6,7 @@
 const isTTY = process.stdout.isTTY;
 
 const BOLD = isTTY ? '\x1b[1m' : '';
+const CYAN = isTTY ? '\x1b[36m' : '';
 const GREEN = isTTY ? '\x1b[32m' : '';
 const RED = isTTY ? '\x1b[31m' : '';
 const RESET = isTTY ? '\x1b[0m' : '';
@@ -21,6 +22,10 @@ export function bold(text: string): string {
 export default function log(...messages: Array<Loggable>): void {
   console.log(...messages);
 }
+
+log.debug = function debug(first: Loggable, ...rest: Array<Loggable>) {
+  console.log(...[`[debug] ${first}`, ...rest].map(colorize(CYAN + BOLD)));
+};
 
 log.error = function error(first: Loggable, ...rest: Array<Loggable>) {
   console.log(...[`[error] ${first}`, ...rest].map(colorize(RED + BOLD)));
